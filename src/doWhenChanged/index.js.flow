@@ -1,0 +1,5 @@
+// @flow
+
+type DoWhen<S> = (state: S, ...rest: Array<*>) => void
+
+declare export function createMiddleware<S, A> (...actors:Array<DoWhen<S>>): Middleware<S, A>

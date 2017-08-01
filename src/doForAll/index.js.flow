@@ -1,0 +1,13 @@
+// @flow
+
+import type {MiddlewareAPI, Middleware} from 'redux'
+
+type NextFunction = (destructFunction: DestructFunction) => void
+type ConstructFunction<S, A> = (value: ?any, next: NextFunction, ...args: P) => DestructFunction
+type DestructFunction = () => void
+type ChangedFunction<P> = (newValue: ?any, oldValue: ?any, ...args: P) => DestructFunction
+
+type DoWhen<S, P> = (state: S, ...rest: P) => void
+
+declare export default function doForAll<S, A, P> (selector: (state: S, ...rest: P) => {[key: string] => ?any}, startFunc: ConstructFunction<S, A>, changedFunc: ?ChangedFunction<P> ): DoWhen<S, P>
+

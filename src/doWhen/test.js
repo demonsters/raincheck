@@ -1,0 +1,70 @@
+
+import doWhen from '.'
+
+describe('doWhen()', () => {
+
+  const start = jest.fn();
+  const end = jest.fn();
+  const changed = jest.fn();
+
+  const TestActor = doWhen(s => s, (...args) => {
+    start(...args)
+    return () => end(...args)
+  }, changed)
+
+  it('should work with true & false', () => {
+
+    start.mockClear()
+    end.mockClear()
+
+    TestActor(true)
+    expect(start).toBeCalled()
+    TestActor(true)
+
+    TestActor(false)
+    expect(start).toBeCalled()
+    TestActor(false)
+
+    expect(start).toHaveBeenCalledTimes(1)
+    expect(start).toHaveBeenCalledTimes(1)
+  })
+
+
+  it('should cancel next', () => {
+
+    const firstStart = jest.fn();
+    const firstEnd = jest.fn();
+
+    const secondStart = jest.fn();
+    const secondEnd = jest.fn();
+
+    let nextHandler
+
+    const firstActor = (next) => {
+      firstStart()
+      nextHandler = () => next(secondActor())
+      return firstEnd
+    }
+
+    const secondActor = () => {
+      secondStart()
+      return secondEnd
+    }
+
+    const TestActor2 = doWhen(s => s, firstActor)
+
+    TestActor2(true)
+    expect(firstStart).toBeCalled()
+
+    nextHandler()
+
+    expect(secondStart).toBeCalled()
+
+    TestActor2(false)
+
+    expect(secondEnd).toHaveBeenCalledTimes(1)
+    expect(firstEnd).not.toBeCalled()
+
+  })
+
+})
