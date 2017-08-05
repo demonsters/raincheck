@@ -1,5 +1,9 @@
 
+import { createStore, applyMiddleware } from 'redux';
+
 import createMiddleware from '.'
+import doWhen from '../doWhen'
+
 
 describe('createMiddleware()', () => {
 
@@ -21,6 +25,39 @@ describe('createMiddleware()', () => {
 
     expect(listener).toBeCalledWith(state, store, action)
     expect(next).toBeCalledWith(action)
+  })
+
+
+  it('should work when wired up in redux', () => {
+
+    const start = jest.fn();
+    const end = jest.fn();
+
+    const tester = doWhen(s => s.active, () => {
+      start()
+      return end
+    })
+    const reducer = (state = {active: false}, action) => {
+      switch (action.type) {
+        case "ACTIVATE":
+          return {
+            active: true
+          }
+        case "DEACTIVATE":
+          return {
+            active: false
+          }
+      }
+      return state
+    }
+
+    const store = createStore(reducer, applyMiddleware(createMiddleware(tester)))
+    expect(start).not.toBeCalled()
+    store.dispatch({type: "ACTIVATE"})
+    expect(start).toBeCalled()
+    store.dispatch({type: "DEACTIVATE"})
+    expect(end).toBeCalled()
+
   })
 
 })
