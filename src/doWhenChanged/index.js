@@ -1,11 +1,11 @@
 
 export default (selector, func) => {
   let oldState
-  return (store, action) => {
-    let val = selector(store.getState())
+  return (state, ...args) => {
+    let val = selector(state)
     if (val !== oldState) {
+      func(val, oldState, ...args)
       oldState = val
-      func(store)
     }
   }
 }

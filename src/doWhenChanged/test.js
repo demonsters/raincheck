@@ -1,42 +1,45 @@
 
-describe('doWhenChanged', () => {
+import doWhenChanged from '.'
 
-  it('', () => {})
+describe('doWhenChanged()', () => {
+
+  const setup = () => {
+    const changed = jest.fn();
+    const tester = doWhenChanged(s => s, changed)
+
+    return {
+      changed,
+      tester
+    }
+  }
+
+  it('should work with numbers', () => {
+
+    const {changed,tester} = setup()
+
+    tester(1)
+    expect(changed).toBeCalledWith(1, undefined)
+
+    tester(2)
+    expect(changed).toBeCalledWith(2, 1)
+
+    expect(changed).toHaveBeenCalledTimes(2)
+
+  })
+
+  it('should work with strings', () => {
+
+    const {changed,tester} = setup()
+
+    tester("string1")
+    expect(changed).toBeCalledWith("string1", undefined)
+
+    tester("string2")
+    expect(changed).toBeCalledWith("string2", "string1")
+
+    expect(changed).toHaveBeenCalledTimes(2)
+
+  })
 
 })
 
-  // it('should work with numbers', () => {
-
-  //   const start = jest.fn();
-  //   const end = jest.fn();
-
-  //   const TestActor2 = doForAll({start, end})
-
-  //   TestActor2(1)
-  //   expect(start).toBeCalledWith(1, expect.anything())
-
-  //   TestActor2(2)
-  //   expect(start).toBeCalledWith(2, expect.anything())
-  //   expect(end).toBeCalledWith(1)
-
-  //   expect(start).toHaveBeenCalledTimes(2)
-  //   expect(end).toHaveBeenCalledTimes(1)
-
-  // })
-
-  // xit('should work with strings', () => {
-
-  //   const start = jest.fn();
-
-  //   const TestActor2 = doForAll({start, end})
-
-  //   TestActor2("string1")
-  //   expect(start).toBeCalledWith(1)
-
-  //   TestActor2("string2")
-  //   expect(start).toBeCalledWith(2)
-
-  //   expect(start).toHaveBeenCalledTimes(2)
-  //   expect(end).toHaveBeenCalledTimes(2)
-
-  // })
