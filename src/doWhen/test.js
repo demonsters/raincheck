@@ -3,30 +3,26 @@ import doWhen from '.'
 
 describe('doWhen()', () => {
 
-  const start = jest.fn();
-  const end = jest.fn();
-  const changed = jest.fn();
-
-  const TestActor = doWhen(s => s, (...args) => {
-    start(...args)
-    return () => end(...args)
-  }, changed)
-
   it('should work with true & false', () => {
 
-    start.mockClear()
-    end.mockClear()
+    const start = jest.fn();
+    const end = jest.fn();
+
+    const TestActor = doWhen(s => s, (...args) => {
+      start(...args)
+      return end
+    })
 
     TestActor(true)
     expect(start).toBeCalled()
     TestActor(true)
 
     TestActor(false)
-    expect(start).toBeCalled()
+    expect(end).toBeCalled()
     TestActor(false)
 
     expect(start).toHaveBeenCalledTimes(1)
-    expect(start).toHaveBeenCalledTimes(1)
+    expect(end).toHaveBeenCalledTimes(1)
   })
 
 
