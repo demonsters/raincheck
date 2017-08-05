@@ -5,6 +5,11 @@ export default (selector, startFunc) => {
   let cachedObjects = []
   let destructFuncs = {}
 
+  // Create the next function
+  const createNext = key => destructFunc => {
+    destructFuncs[key] = destructFunc
+  }
+
   return (state, ...args) => {
 
     const objects = selector(state)
@@ -17,7 +22,7 @@ export default (selector, startFunc) => {
 
     objects.forEach(key => {
       if (cachedObjects.indexOf(key) === -1) {
-        destructFuncs[key] = startFunc(key, ...args)
+        destructFuncs[key] = startFunc(key, createNext(key), ...args)
       }
       // Remove so it will not be destructed below
       const index = destructObjects.indexOf(key)
