@@ -1,56 +1,55 @@
 
-const createNext = (...creators) => {
+const createNext = (parentFunc) => {
 
-  if (creators.length === 0) {
-    return
+  let doNext = (...creators) => {
+
+    // call all creators, and add the destruct returns into an array
+    let destructs = creators
+      .map(creator => {
+
+        if (!creator) {
+          return null
+        }
+
+        let destruct
+
+        const next = createNext((d, doDestruct) => {
+
+          if (doDestruct) {
+            destructs = destructs.filter(d => d !== destruct)
+          }
+
+          // Add the new destruct function
+          destructs.push(d)
+
+        })
+
+        destruct = creator(next)
+        if (!destruct) {
+          return null
+        }
+
+        return destruct
+      })
+
+    // Create a new destruct which calls all destructs
+    const destruct = (...args) => {
+      destructs.forEach(destruct => destruct && destruct(...args))
+      destructs.length = 0
+    }
+
+    parentFunc(destruct, creators[0] !== false)
+
+    return destruct
   }
 
-  let doDestruct = true
-  if (creators[0] === false) {
-    doDestruct = false
-  }
+  let next = (...args) => doNext(...args)
+  next.branch = (...args) => doNext(false, ...args)
+  next.complete = doNext
+  next.resolve = doNext
+  next.chain = doNext
 
-  // call all creators, and add the destruct returns into an array
-  let destructs = creators
-    .map(creator => {
-
-      if (!creator) {
-        return null
-      }
-
-      let destruct
-
-      const next = (...args) => {
-        const d = createNext(...args)
-
-        // Here we prevent the old destruct if never be called
-        destructs = destructs.filter(d => d !== destruct)
-
-        // Add the new destruct function
-        destructs.push(d)
-        return d
-      }
-
-      destruct = creator(next)
-      if (!destruct) {
-        return null
-      }
-
-      // Wrap the destruct so the destruct is never called twice??
-      // destruct2 = () => {
-      //   destructs = destructs.filter(d => d !== destruct2)  // TODO: add unit test for this
-      //   return destruct1()
-      // }
-      return destruct
-    })
-
-  // Create a new destruct which calls all destructs
-  const destruct = (...args) => {
-    destructs.forEach(destruct => destruct && destruct(...args))
-    destructs.length = 0
-  }
-
-  return destruct
+  return next
 }
 
-export default createNext
+export default createNext(() => {})

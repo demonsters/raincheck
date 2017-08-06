@@ -38,7 +38,7 @@ describe('doWhen()', () => {
 
     const firstActor = (next) => {
       firstStart()
-      nextHandler = () => next(secondActor())
+      nextHandler = () => next(secondActor)
       return firstEnd
     }
 

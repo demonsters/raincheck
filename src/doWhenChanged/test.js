@@ -63,7 +63,7 @@ describe('doWhenChanged()', () => {
 
     const firstActor = (newValue, oldValue, next) => {
       firstStart()
-      nextHandler = () => next(secondActor())
+      nextHandler = () => next(secondActor)
       return firstEnd
     }
 

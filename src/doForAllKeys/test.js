@@ -53,7 +53,7 @@ describe('doForAllKeys()', () => {
 
     const doTest1 = (string, next) => {
       firstStart()
-      nextHandler = () => next(doTest2())
+      nextHandler = () => next(doTest2)
       return firstEnd
     }
 
