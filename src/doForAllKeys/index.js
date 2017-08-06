@@ -1,3 +1,4 @@
+import createNext from './../_libs/createNext';
 
 
 export default (selector, startFunc) => {
@@ -6,9 +7,9 @@ export default (selector, startFunc) => {
   let destructFuncs = {}
 
   // Create the next function
-  const createNext = key => destructFunc => {
-    destructFuncs[key] = destructFunc
-  }
+  // const createNext = key => destructFunc => {
+  //   destructFuncs[key] = destructFunc
+  // }
 
   return (state, ...args) => {
 
@@ -22,7 +23,7 @@ export default (selector, startFunc) => {
 
     objects.forEach(key => {
       if (cachedObjects.indexOf(key) === -1) {
-        destructFuncs[key] = startFunc(key, createNext(key), ...args)
+        destructFuncs[key] = createNext(next => startFunc(key, next, ...args))
       }
       // Remove so it will not be destructed below
       const index = destructObjects.indexOf(key)

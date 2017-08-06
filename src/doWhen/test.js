@@ -47,16 +47,16 @@ describe('doWhen()', () => {
       return secondEnd
     }
 
-    const TestActor2 = doWhen(s => s, firstActor)
+    const tester = doWhen(s => s, firstActor)
 
-    TestActor2(true)
+    tester(true)
     expect(firstStart).toBeCalled()
 
     nextHandler()
 
     expect(secondStart).toBeCalled()
 
-    TestActor2(false)
+    tester(false)
 
     expect(secondEnd).toHaveBeenCalledTimes(1)
     expect(firstEnd).not.toBeCalled()

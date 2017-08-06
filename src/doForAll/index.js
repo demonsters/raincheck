@@ -1,3 +1,4 @@
+import createNext from '../_libs/createNext';
 
 
 export default (selector, startFunc, changedFunc) => {
@@ -5,11 +6,6 @@ export default (selector, startFunc, changedFunc) => {
   // Objects getting mutated!!
   let cachedObjects = {}
   let destructFuncs = {}
-
-  // Create the next function
-  const createNext = key => destructFunc => {
-    destructFuncs[key] = destructFunc
-  }
 
   return (state, ...args) => {
 
@@ -42,7 +38,7 @@ export default (selector, startFunc, changedFunc) => {
 
       // Check if object is new
       if (!cachedObjects.hasOwnProperty(key)) {
-        destructFuncs[key] = startFunc(object, createNext(key), ...args)
+        destructFuncs[key] = createNext(next => startFunc(object, next, ...args))
 
       // Check if object has changed
       } else if (cachedObjects[key] !== object && changedFunc) {

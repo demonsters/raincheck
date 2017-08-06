@@ -1,3 +1,4 @@
+import createNext from './../_libs/createNext';
 
 export default (selector, func) => {
   let oldState
@@ -7,7 +8,7 @@ export default (selector, func) => {
     if (val !== oldState) {
       oldState = val
       if (val) {
-        destruct = func(d => destruct = d, ...args)
+        destruct = createNext(next => func(next, ...args))
       } else if (destruct) {
         destruct()
       }
