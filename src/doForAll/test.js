@@ -8,6 +8,20 @@ describe('doForAll()', () => {
     const end = jest.fn();
     const changed = jest.fn();
 
+    // TODO:
+
+    // doForAll(s => s, fnc)
+    // doForAll(undefined, fnc)
+    // or
+    // doForAll(s => s)(fnc)
+    // doForAll()(fnc)
+    // or
+    // doForAll(fnc).with(s => s)
+    // doForAll(fnc)
+    // or
+    // forAll(s => s).do(fnc)
+    // forAll().do(fnc)
+
     const tester = doForAll(s => s, (...args) => {
       start(...args)
       return () => end(...args)
@@ -152,6 +166,30 @@ describe('doForAll()', () => {
 
   })
 
+
+  xit('should be testable', () => {
+
+
+    const state = {
+      loggedUsers: ["1", "2"]
+    }
+
+    const sendLogin = (userId) => {
+
+    }
+
+    const testUtil = () => {
+
+    }
+
+    const tester = doForAll(s => s.loggedUsers, sendLogin)
+
+    const spy = testUtil(tester)(state)
+    expect(spy(sendLogin)).toBeCalledWith("1")
+    expect(spy(sendLogin)).toBeCalledWith("2")
+
+
+  })
 
 
 })

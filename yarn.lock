@@ -1225,6 +1225,10 @@ find@^0.2.7:
   dependencies:
     traverse-chain "~0.1.0"
 
+flow-bin@^0.54.0:
+  version "0.54.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.54.0.tgz#f2fb0478e9e99702b623c9ed84079a39903bba77"
+
 for-in@^0.1.5:
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/for-in/-/for-in-0.1.6.tgz#c9f96e89bfad18a545af5ec3ed352a1d9e5b4dc8"
