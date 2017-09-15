@@ -1,5 +1,20 @@
+// @flow
 
-import generate from '.'
+import generate, {withMockFunctions} from '.'
+
+const getTester = (connectToSocket) => generate(
+  state => ({
+    isLoggedIn: state.isLoggedIn,
+    url: state.url,
+    test: state.test
+  }),
+
+  ({isLoggedIn, url}, call) => {
+    if (isLoggedIn && url) {
+      call(connectToSocket, [url], url)
+    }
+  }
+)
 
 describe('generate', () => {
 
@@ -7,19 +22,7 @@ describe('generate', () => {
 
     const connectToSocket = jest.fn()
 
-    const tester = generate(
-
-      state => ({
-        isLoggedIn: state.isLoggedIn,
-        url: state.url
-      }),
-
-      ({isLoggedIn, url}, call) => {
-        if (isLoggedIn && url) {
-          call(connectToSocket, [url], url)
-        }
-      }
-    )
+    const tester = getTester(connectToSocket)
 
     const url = "dfgh"
     const state = {
@@ -104,29 +107,24 @@ describe('generate', () => {
 
     const connectToSocket = () => {}
 
-    const tester = generate(
-
-      state => ({
-        isLoggedIn: state.isLoggedIn,
-        url: state.url
-      }),
-
-      ({isLoggedIn, url}, call) => {
-        if (isLoggedIn && url) {
-          call(connectToSocket, [url], url)
-        }
-      }
-    )
-
-    const url = "dfgh"
-    const state = {
-      isLoggedIn: true,
-      url
-    }
+    let tester = getTester(connectToSocket)
 
     const listener = jest.fn()
-    tester(state, listener)
+    const destruct = jest.fn()
+    tester = withMockFunctions(tester, listener, destruct)
+
+    const url = "dfgh"
+    tester({
+      isLoggedIn: true,
+      url
+    })
     expect(listener).toBeCalledWith(connectToSocket, [url], expect.anything())
+    expect(destruct).not.toBeCalled()
+    tester({
+      isLoggedIn: false,
+      url
+    })
+    expect(destruct).toBeCalled()
 
   })
 
@@ -136,19 +134,7 @@ describe('generate', () => {
     const destruct = jest.fn()
     const connectToSocket = () => destruct
 
-    const tester = generate(
-
-      state => ({
-        isLoggedIn: state.isLoggedIn,
-        url: state.url
-      }),
-
-      ({isLoggedIn, url}, call) => {
-        if (isLoggedIn && url) {
-          call(connectToSocket, [url], url)
-        }
-      }
-    )
+    const tester = getTester(connectToSocket)
 
     tester({
       isLoggedIn: true,
@@ -170,20 +156,7 @@ describe('generate', () => {
     const destruct = jest.fn()
     const connectToSocket = () => destruct
 
-    const tester = generate(
-
-      state => ({
-        isLoggedIn: state.isLoggedIn,
-        url: state.url,
-        test: state.test
-      }),
-
-      ({isLoggedIn, url}, call) => {
-        if (isLoggedIn && url) {
-          call(connectToSocket, [url], url)
-        }
-      }
-    )
+    const tester = getTester(connectToSocket)
 
     tester({
       isLoggedIn: true,
@@ -200,6 +173,49 @@ describe('generate', () => {
     expect(destruct).not.toBeCalled()
 
   })
+
+
+  it('should work with arrays', () => {
+
+      const start = jest.fn();
+      const end = jest.fn();
+
+      const func = (...args) => {
+        start(...args)
+        return end
+      }
+
+      const tester = generate(s => s, (array, call) => {
+        array.forEach(key => call(func, [key], key) )
+      })
+
+      const obj1 = "object 1"
+      const obj2 = "object 2"
+
+      // Start obj1
+      tester([obj1])
+      tester([obj1])
+      expect(start).toBeCalledWith(obj1, expect.anything())
+
+      // Start obj2
+      tester([obj1, obj2])
+      tester([obj1, obj2])
+      expect(start).toBeCalledWith(obj2, expect.anything())
+
+      // End obj1
+      tester([obj2])
+      tester([obj2])
+      expect(end).toBeCalled()
+
+      // End obj2
+      tester([])
+      expect(end).toBeCalled()
+
+      expect(start).toHaveBeenCalledTimes(2)
+      expect(end).toHaveBeenCalledTimes(2)
+
+    })
+
 
 
 })
