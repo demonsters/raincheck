@@ -1,3 +1,4 @@
+// @flow
 
 import doForAll from '.'
 
@@ -22,7 +23,7 @@ describe('doForAll()', () => {
     // forAll(s => s).do(fnc)
     // forAll().do(fnc)
 
-    const tester = doForAll(s => s, (...args) => {
+    const tester = doForAll((s?:{[key: string]: ?any}) => s, (...args) => {
       start(...args)
       return () => end(...args)
     }, changed)
