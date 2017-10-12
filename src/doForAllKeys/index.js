@@ -1,7 +1,7 @@
 import createNext from './../_libs/createNext';
 
 
-export default (selector, startFunc) => {
+const doForAllKeys = (selector, constructMock, destructMock) => (constructFunc) => {
 
   let cachedObjects = []
   let destructFuncs = {}
@@ -11,7 +11,7 @@ export default (selector, startFunc) => {
   //   destructFuncs[key] = destructFunc
   // }
 
-  return (state, ...args) => {
+  const construct = (state, ...args) => {
 
     const objects = selector(state)
 
@@ -23,7 +23,11 @@ export default (selector, startFunc) => {
 
     objects.forEach(key => {
       if (cachedObjects.indexOf(key) === -1) {
-        destructFuncs[key] = createNext(next => startFunc(key, next, ...args))
+        if (constructMock) {
+          constructMock(constructFunc, key)
+        } else {
+          destructFuncs[key] = createNext(next => constructFunc(key, next, ...args))
+        }
       }
       // Remove so it will not be destructed below
       const index = destructObjects.indexOf(key)
@@ -42,6 +46,9 @@ export default (selector, startFunc) => {
 
   }
 
+  construct.mock = (constructMock, destructMock) => doForAllKeys(selector, constructMock, destructMock)(constructFunc)
+  construct.with = (selector) => doForAllKeys(selector)(constructFunc)
+  return construct
 }
 
-
+export default doForAllKeys(s => s)

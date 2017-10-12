@@ -2,7 +2,7 @@
 import { createStore, applyMiddleware } from 'redux';
 
 import createMiddleware from '.'
-import doWhen from '../doWhen'
+import doWhenTrue from '../doWhenTrue'
 
 
 describe('createMiddleware()', () => {
@@ -33,10 +33,11 @@ describe('createMiddleware()', () => {
     const start = jest.fn();
     const end = jest.fn();
 
-    const tester = doWhen(s => s.active, () => {
+    const tester = doWhenTrue(() => {
       start()
       return end
-    })
+    }).with(s => s.active)
+
     const reducer = (state = {active: false}, action) => {
       switch (action.type) {
         case "ACTIVATE":

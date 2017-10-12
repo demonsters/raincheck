@@ -10,3 +10,9 @@ import createMiddleware from './createMiddleware'
 
 // doForAllObjects ??
 // doFor ??
+
+// act(() => {}).forAll()
+
+// doWhen(isLoggedIn, connect).then()
+
+// doWhen(isLogginIn, connect).observe(observable => observable.)

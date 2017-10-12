@@ -1,7 +1,7 @@
 {
   "name": "redux-do-when",
   "version": "0.0.1",
-  "description": "Libraries",
+  "description": "A condition based cancelable side effect library",
   "main": "src/index.js",
   "scripts": {
     "test": "jest",
@@ -11,22 +11,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@git.demonsters.com:stijn/redux-do-when.git"
+    "url": "https://github.com/demonsters/redux-do-when"
   },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-  },
+  "author": "Stijn van der Laan <stijn@demonsters.com>",
+  "license": "MIT",
+  "dependencies": {},
   "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-cli": "^6.18.0",
     "babel-preset-latest": "^6.16.0",
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-2": "^6.17.0",
-    "jest": "^19.0.2",
-    "find": "^0.2.7",
-    "fs-extra": "^4.0.1",
-    "babel": "^6.5.2",
-    "babel-cli": "^6.18.0",
     "babel-register": "^6.16.3",
+    "find": "^0.2.7",
+    "flow-bin": "^0.54.0",
+    "fs-extra": "^4.0.1",
+    "jest": "^19.0.2",
     "redux": "^3.6.0"
   }
 }
