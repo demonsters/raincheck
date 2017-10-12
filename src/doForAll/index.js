@@ -1,13 +1,13 @@
 import createNext from '../_libs/createNext';
 
 
-export default (selector, startFunc, changedFunc) => {
+const doForAll = (selector, constructMock, destructMock) => (constructFunc, changedFunc) => {
 
   // Objects getting mutated!!
   let cachedObjects = {}
   let destructFuncs = {}
 
-  return (state, ...args) => {
+  const construct = (state, ...args) => {
 
     // Get the objects
     const objects = selector(state)
@@ -38,7 +38,11 @@ export default (selector, startFunc, changedFunc) => {
 
       // Check if object is new
       if (!cachedObjects.hasOwnProperty(key)) {
-        destructFuncs[key] = createNext(next => startFunc(object, next, ...args))
+        if (constructMock) {
+          constructMock(constructFunc, object) // need key?
+        } else {
+          destructFuncs[key] = createNext(next => constructFunc(object, next, ...args))
+        }
 
       // Check if object has changed
       } else if (cachedObjects[key] !== object && changedFunc) {
@@ -64,6 +68,13 @@ export default (selector, startFunc, changedFunc) => {
     // Cache current objects
     cachedObjects = objects
   }
+
+  construct.mock = (constructMock, destructMock) => doForAll(selector, constructMock, destructMock)(constructFunc, changedFunc)
+  construct.with = (selector) => doForAll(selector)(constructFunc, changedFunc)
+  return construct
 }
+
+export default doForAll(s => s)
+
 
 

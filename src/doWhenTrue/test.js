@@ -77,4 +77,21 @@ describe("doWhenTrue()", () => {
       expect(start).not.toBeCalled();
     });
   });
+
+
+  describe("mock()", () => {
+
+    it('should be testable', () => {
+
+      const spy = jest.fn()
+      const changed = () => {}
+      const tester = doWhenTrue(changed).mock(spy)
+
+      tester(true)
+      expect(spy).toBeCalledWith(changed)
+
+    })
+  })
+
+
 });

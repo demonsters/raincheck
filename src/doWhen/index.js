@@ -9,7 +9,7 @@ function shallowDiffers (a, b) {
 }
 
 
-const doWhen = (selector, call, destruct) => (checkFunc) => {
+const doWhen = (selector, constructMock, destructMock) => (checkFunc) => {
   let destructFuncs = {}
   let destructKeys
 
@@ -19,13 +19,13 @@ const doWhen = (selector, call, destruct) => (checkFunc) => {
     if (index > -1) destructKeys.splice(index, 1)
 
     if (destructFuncs[key] === undefined) {
-      if (call) {
-        call(func, args, key)
+      if (constructMock) {
+        constructMock(func, args, key)
       } else {
         destructFuncs[key] = createNext(next => func(...args, next))
       }
-      if (destruct) {
-        destructFuncs[key] = () => destruct(key)
+      if (destructMock) {
+        destructFuncs[key] = () => destructMock(key)
       }
       if (!destructFuncs[key]) {
         destructFuncs[key] = null
@@ -50,7 +50,7 @@ const doWhen = (selector, call, destruct) => (checkFunc) => {
       oldState = newState
     }
   }
-  construct.with = (selector) => doWhen(selector, call, destruct)(checkFunc)
+  construct.with = (selector) => doWhen(selector, constructMock, destructMock)(checkFunc)
   construct.mock = (call, destruct) => doWhen(selector, call, destruct)(checkFunc)
   return construct
 

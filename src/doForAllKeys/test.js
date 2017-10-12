@@ -8,7 +8,7 @@ describe('doForAllKeys()', () => {
     const start = jest.fn();
     const end = jest.fn();
 
-    const tester = doForAllKeys(s => s, (...args) => {
+    const tester = doForAllKeys((...args) => {
       start(...args)
       return () => end(...args)
     })
@@ -62,7 +62,7 @@ describe('doForAllKeys()', () => {
       return secondEnd
     }
 
-    const tester = doForAllKeys(s => s, doTest1)
+    const tester = doForAllKeys(doTest1)
 
     tester(["string"])
     expect(firstStart).toBeCalled()
@@ -78,5 +78,40 @@ describe('doForAllKeys()', () => {
 
   })
 
+
+  describe("with()", () => {
+    it("should called", () => {
+      const start = jest.fn();
+      const tester = doForAllKeys(start).with(s => s.value);
+
+      const obj1 = "object 1"
+      tester({ value: [obj1] });
+      expect(start).toBeCalledWith(obj1, expect.anything());
+    });
+  });
+
+
+  describe("mock()", () => {
+
+    it('should be testable', () => {
+
+      const state = {
+        loggedUsers: ["1", "2"]
+      }
+
+      const sendLogin = (userId) => {}
+
+      const spy = jest.fn()
+      const tester = doForAllKeys(sendLogin)
+        .with(s => s.loggedUsers)
+        .mock(spy)
+
+      tester(state)
+
+      expect(spy).toBeCalledWith(sendLogin, "1")
+      expect(spy).toBeCalledWith(sendLogin, "2")
+
+    })
+  })
 
 })
