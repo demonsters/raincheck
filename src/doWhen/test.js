@@ -212,12 +212,25 @@ describe('generate', () => {
         const destruct = jest.fn()
 
         const tester = doWhen(start)
-          .with(s => s.value)
+          .map(s => s.value)
           .mock(listener, destruct)
 
         const obj1 = "object 1"
         tester({ value: obj1 });
         expect(start).toBeCalledWith(obj1, expect.anything());
+      })
+
+      it('should work when value is not an object', () => {
+        const start = jest.fn();
+
+        const listener = jest.fn()
+        const destruct = jest.fn()
+
+        const tester = doWhen(start)
+          .mock(listener, destruct)
+
+        tester(true);
+        expect(start).toBeCalled();
       })
 
     })
