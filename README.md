@@ -4,10 +4,10 @@
 Do something when the conditions are right and cancel them if they're not.
 
 Say you want to connect to a socket when you are logged in, and want to disconnect when not.
-But you can only connect once the socket url has been known.
+But you can only connect once the socket url is known.
 
 If you know react, you know that it is particularly good in does tips of situations.
-But a socket is not a `react` element, you could wrap in in one, but that's a bit akward.
+But a socket is not a `react` element, you could wrap in in one (start in componentDidMound, end in componentWillUnmount), but that's a bit akward.
 
 Here comes raincheck to the rescue. Inspired by react & redux:
 
@@ -54,8 +54,8 @@ const connectToSocket = (api, url) => {
 
 # Redux
 
-`Raincheck` is in particular great to be used with Redux.
-For this an helper function `createMiddleware()` is available:
+`Raincheck` is particular great when used with Redux.
+To connect to a store you can use `createMiddleware()`, like so:
 
 ```javascript
 
@@ -69,7 +69,9 @@ createMiddleware(
 
 ```
 
-The state will be passed in as the first argument. Everytime the state changed this will be called. If you only want to call this if the props used are changed, you can use the `map()` function, which works like the mapStateToProps function in the `connect()` function from `react-redux`:
+The state will be passed in as the first argument. Everytime the state changed this will be called. 
+
+To narrow down the state, you can use the `map()` function, it does a shallow equal and prevent calls if they did not change (like `mapStateToProps` in the `connect()` from `react-redux`):
 
 ```javascript
 
@@ -90,7 +92,7 @@ createMiddleware(
 
 # Unit testing
 
-With the `mock()` function you can easelly test your setup:
+With the `mock()` function you can easily test your setup:
 
 ```javascript
 
