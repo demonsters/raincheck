@@ -1,2 +1,7 @@
 
 src/
+scripts/
+flow-typed/
+yarn.lock
+.flowconfig
+.babelrc
