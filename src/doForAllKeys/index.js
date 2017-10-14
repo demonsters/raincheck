@@ -48,6 +48,7 @@ const doForAllKeys = (selector, constructMock, destructMock) => (constructFunc) 
 
   construct.mock = (constructMock, destructMock) => doForAllKeys(selector, constructMock, destructMock)(constructFunc)
   construct.with = (selector) => doForAllKeys(selector)(constructFunc)
+  construct.map = construct.with
   return construct
 }
 

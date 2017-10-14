@@ -20,8 +20,11 @@ const doWhenTrue = (selector, constructMock) => (constructFunc) => {
     }
   }
   construct.mock = (constructMock) => doWhenTrue(selector, constructMock)(constructFunc)
-  construct.with = (selector) => doWhenTrue(selector, constructMock)(constructFunc)
+  construct.with = (newSelector) => doWhenTrue(s => newSelector(selector(s)), constructMock)(constructFunc)
+  construct.map = construct.with
   return construct
 }
+
+// TODO: with = map
 
 export default doWhenTrue(s => s)

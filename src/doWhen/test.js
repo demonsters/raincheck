@@ -112,7 +112,7 @@ describe('generate', () => {
   })
 
 
-  it('should not destruct function when something unrelated changed', () => {
+  it('should NOT destruct function when something unrelated changed', () => {
 
     const destruct = jest.fn()
     const connectToSocket = () => destruct

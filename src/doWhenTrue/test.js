@@ -59,19 +59,41 @@ describe("doWhenTrue()", () => {
     expect(firstEnd).not.toBeCalled();
   });
 
-  describe("with()", () => {
+  describe("map()", () => {
 
     it("should call when true", () => {
       const start = jest.fn();
-      const tester = doWhenTrue(start).with(s => s.value);
+      const tester = doWhenTrue(start).map(s => s.value);
 
       tester({ value: true });
       expect(start).toBeCalled();
     });
 
+    it("should call with multiple maps", () => {
+      const start = jest.fn();
+      const tester = doWhenTrue(start)
+        .map(s => s.value)
+        .map(s => s.value1);
+
+      tester({ value: { value1: true } });
+      expect(start).toBeCalled();
+    });
+
+
+    it("should NOT call with multiple maps value = false", () => {
+      const start = jest.fn();
+      const tester = doWhenTrue(start)
+        .map(s => s.value)
+        .map(s => s.value1);
+
+      tester({ value: { value1: false } });
+      expect(start).not.toBeCalled();
+    });
+
+
     it("should NOT call when false", () => {
       const start = jest.fn();
-      const tester = doWhenTrue(start).with(s => s.value);
+      const tester = doWhenTrue(start).map(s => s.value);
 
       tester({ value: false });
       expect(start).not.toBeCalled();

@@ -52,6 +52,7 @@ const doWhen = (selector, constructMock, destructMock) => (checkFunc) => {
   }
   construct.with = (selector) => doWhen(selector, constructMock, destructMock)(checkFunc)
   construct.mock = (call, destruct) => doWhen(selector, call, destruct)(checkFunc)
+  construct.map = construct.with
   return construct
 
 }

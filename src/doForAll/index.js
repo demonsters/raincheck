@@ -71,6 +71,7 @@ const doForAll = (selector, constructMock, destructMock) => (constructFunc, chan
 
   construct.mock = (constructMock, destructMock) => doForAll(selector, constructMock, destructMock)(constructFunc, changedFunc)
   construct.with = (selector) => doForAll(selector)(constructFunc, changedFunc)
+  construct.map = construct.with
   return construct
 }
 

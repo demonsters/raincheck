@@ -19,6 +19,7 @@ const doWhenChanged = (selector, constructMock) => (changedFunc) => {
   }
   construct.mock = (constructMock) => doWhenChanged(selector, constructMock)(changedFunc)
   construct.with = (selector) => doWhenChanged(selector, constructMock)(changedFunc)
+  construct.map = construct.with
   return construct
 }
 export default doWhenChanged(s => s)
