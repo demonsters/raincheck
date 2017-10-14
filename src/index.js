@@ -2,6 +2,17 @@
 // TODO: More unit tests?
 // TODO: flow
 
+// raincheck !!
+
+// although
+// wheneverjs
+// meanwhilejs
+// meantime
+// conditionjs
+// state-observe
+// state-react
+// on-state
+// state-act
 // act-on
 // acton
 // call-when
@@ -10,6 +21,8 @@
 // act-when
 // redux-do-when
 // act-on-state
+// do-when-changed
+// state-watch
 
 // beetje ver gezocht misschien:
 // seasonal

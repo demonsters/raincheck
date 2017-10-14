@@ -9,5 +9,5 @@ type ChangedFunction<P> = (newValue: ?any, oldValue: ?any, ...args: P) => Destru
 
 type DoWhen<S, P> = (state: S, ...rest: P) => void
 
-declare export default function doForAll<S, A, P> (selector: (state: S, ...rest: P) => {[key: string] => ?any}, startFunc: ConstructFunction<S, A>, changedFunc: ?ChangedFunction<P> ): DoWhen<S, P>
+declare export default function doForAll<S, A, P> (selector: (state: S, ...rest: P) => {[key: string]: ?any} | null | undefined, startFunc: ConstructFunction<S, A>, changedFunc: ?ChangedFunction<P> ): DoWhen<S, P>
 

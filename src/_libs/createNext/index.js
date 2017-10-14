@@ -34,7 +34,9 @@ const createNext = (parentFunc) => {
 
     // Create a new destruct which calls all destructs
     const destruct = (...args) => {
-      destructs.forEach(destruct => destruct && destruct(...args))
+      destructs.forEach(destruct => {
+        destruct && typeof destruct === 'function' && destruct(...args)
+      })
       destructs.length = 0
     }
 

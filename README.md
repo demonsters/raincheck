@@ -1,168 +1,143 @@
 
-# redux-do-when
+# Raincheck
 
-`redux-do-when` is a condition based cancelable side effect library for redux.
-It's like React for non-view components.
-The components are functions that construct the 'side effect' and returns de destructor. The construct and destruct functions are called depanding on the condition given. 
+Do something when the conditions are right and cancel them if they're not.
 
-# Example
+Say you want to connect to a socket when you are logged in, and want to disconnect when not.
+But you can only connect once the socket url has been known.
 
-Starting a socket when `isLoggedIn` is `true`, and close it when its `false`.
+If you know react, you know that it is particularly good in does tips of situations.
+But a socket is not a `react` element, you could wrap in in one, but that's a bit akward.
+
+Here comes raincheck to the rescue. Inspired by react & redux:
 
 ```javascript
 
-const connectToSocket = (url, {subscribe}, store) => { // createMiddleware add store and action as arguments
-	// The action to send
-	const socket = new WebSocket()
-	socket.onMessage = (m) => store.dispatch(received(m.data))
-	socket.connect(url)
+import { doWhen } from 'raincheck'
 
-	subscribe('SEND', (action) => socket.send(action.payload))
+const raincheck = doWhen({isLoggedIn, url}, call) => {
+  if (isLoggedIn && !!url) {
+    call(connectToSocket, [url], url) 
+  }
+})
 
-	return socket.close
+```
+
+This will connect to the socket when the following is called:
+
+```javascript
+raincheck({
+  isLoggedIn: true,
+  url: 'ws://socketurl'
+})
+```
+
+And disconnect when:
+
+```javascript
+raincheck({
+  isLoggedIn: false
+})
+```
+
+`Raincheck` works with key's the same way react does. It's the third argument of the `call` function.
+
+The `connectToSocket()` can be any function. This function can return an cancel function, which in this case closes the socket:
+
+```javascript
+const connectToSocket = (api, url) => {
+  const socket = new WebSocket()
+  socket.connect(url)
+  return () => socket.close()
 }
+```
+
+# Redux
+
+`Raincheck` is in particular great to be used with Redux.
+For this an helper function `createMiddleware()` is available:
+
+```javascript
 
 createMiddleware(
-	connect(
-		s => s.isLoggedIn, // The condition
-		doWhen(
-			connectToSocket
-		)
-	)
+  doWhen(({isLoggedIn, url}, call) => {
+    if (isLoggedIn && !!url) {
+      call(connectToSocket, [url], url) 
+    }
+  })
 )
-
-
-generate(
-
-	state => ({
-		isLoggedIn: state.isLoggedIn, 
-		socketURL: state.socketURL
-	}),
-
-	{connectToSocket},
-
-	({isLoggedIn, socketURL}, {connectToSocket}) => {
-		if (isLoggedIn && socketURL) {
-			connectToSocket({
-				key: socketURL,
-				props: [socketURL]
-			}) // Uses first argument is the key
-		}
-	}
-)
-
-
-import generate from ''
-
-const tester = generate(
-
-	state => ({
-		isLoggedIn: state.isLoggedIn, 
-		url: state.url
-	}),
-
-	({isLoggedIn, url}, call) => {
-		if (isLoggedIn && url) {
-			call(connectToSocket, [url], url) 
-			// if key is not set it takes the first argument
-		}
-	}
-)
-
-
-const url = ""
-const state = {
-	isLoggedIn: true,
-	url
-}
-
-const listener = jest.fn()
-tester(state, listener)
-expect(listener).toBeCalledWith(connectToSocket, [url], jest.some())
-
-
-// Return object
-generate(
-
-	state => ({
-		isLoggedIn: state.isLoggedIn, 
-		sockets: state.sockets
-	}),
-
-	{connectToSocket},
-
-	({isLoggedIn, sockets}, {connectToSocket}) => {
-		if (isLoggedIn && sockets) {
-			return sockets.reduce(
-				(object, url) => {...object, [url]: connectToSocket(url)}, {}
-			)
-		}
-	}
-)
-
-
-
-generate(
-
-	state => ({
-		isLoggedIn: state.isLoggedIn, 
-		sockets: state.sockets
-	}),
-
-	{connectToSocket},
-
-	({isLoggedIn, sockets}, {connectToSocket}) => {
-		if (isLoggedIn && sockets) {
-
-			//
-			sockets.forEach(url => call(connectToSocket, [url], url))
-
-			sockets.forEach(url => connectToSocket([url]))
-
-			sockets.forEach(url => connectToSocket([url], url))
-		}
-	}
-)
-
 
 ```
 
+The state will be passed in as the first argument. Everytime the state changed this will be called. If you only want to call this if the props used are changed, you can use the `map()` function, which works like the mapStateToProps function in the `connect()` function from `react-redux`:
 
-# Why no Promises or generators
+```javascript
 
-Promises are not cancalable.
-Generators need a very large polyfill for ie 11.
+createMiddleware(
+  doWhen(({isLoggedIn, url}, call) => {
+    if (isLoggedIn && !!url) {
+      call(connectToSocket, [url], url) 
+    }
+  }).map(state => {
+    return {
+      isLoggedIn: state.login.isLoggedIn,
+      url: state.socket.url
+    }
+  })
+)
 
+```
 
-## doWhen
-The condition function returns an boolean.
-`doWhen` is calling the constructor when condition is changed to `true` and descructor when changed to `false`.
-The construct function gets the `next` function as argument.
+# Unit testing
 
-## doForAll
-The condition function returns an object.
-`doForAll` calls the constructor for every key in the object with the value and destruct when the key is not pressent in the object.
-The construct function gets the object as the first argument, after that the `next` function.
+With the `mock()` function you can easelly test your setup:
 
-## doForAllKeys
-The condition function returns is an array of strings.
-`doForAllKeys` calls the constructor for every key in the array.
-The construct function gets the key as the first argument, after that the `next` function.
+```javascript
+
+// Imported from other file
+
+const connectToSocketWhen = doWhen(
+  ({isLoggedIn, url}, call) => {
+    if (isLoggedIn && !!url) {
+      call(connectToSocket, [url], url)
+    }
+  }
+)
+
+it('should connect to socket', () => {
+
+  const connectToSocket = () => {}
+
+  const listener = jest.fn()
+  const destruct = jest.fn()
+
+  let tester = connectToSocketWhen.mock(listener, destruct) // <--- Here's the magic :)
+
+  const url = "dfgh"
+  tester({
+    isLoggedIn: true,
+    url
+  })
+  expect(listener).toBeCalledWith(connectToSocket, [url], expect.anything())
+	
+})
+```
+
+# Shorthand functions
+
+TODO
+
+## doWhenTrue
 
 ## doWhenChanged
-The condition function returns anything.
-`doWhenChanged` calls the constructor whenever the value is not undefined and other than the old value and the destruct whenever the value changed to another value before the constructor is called.
-The construct function get the new value as first argument, the old value as second argument, after that the `next` function.
+
+## doForAll
+
+## doForAllKeys
 
 
-# Chaining
-You can change the destruct, like when you want to chain another action, by calling the `next` function, given to the constructor.
+# Chaining API
 
-## Branch
-You can also branch a chain. This will add a destruct function instead of replace it so the two side effects can be active at the same time.
+TODO
 
 
-
-```
-
-```

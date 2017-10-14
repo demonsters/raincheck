@@ -1,5 +1,6 @@
 // @flow
 
+type ChangedFunction<P> = (newValue: ?any, oldValue: ?any, ...args: P) => DestructFunction
 type DoWhen<S> = (state: S, ...rest: Array<*>) => void
 
-declare export function createMiddleware<S, A> (...actors:Array<DoWhen<S>>): Middleware<S, A>
+declare export default function doWhen<S, A> (selector: (state: S) => ?any, func: ChangedFunction ): DoWhen<S>
