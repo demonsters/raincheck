@@ -79,10 +79,10 @@ describe('doForAllKeys()', () => {
   })
 
 
-  describe("with()", () => {
+  describe("map()", () => {
     it("should called", () => {
       const start = jest.fn();
-      const tester = doForAllKeys(start).with(s => s.value);
+      const tester = doForAllKeys(start).map(s => s.value);
 
       const obj1 = "object 1"
       tester({ value: [obj1] });

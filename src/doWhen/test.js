@@ -235,10 +235,10 @@ describe('generate', () => {
 
     })
 
-    describe("with()", () => {
+    describe("map()", () => {
       it("should called with object", () => {
         const start = jest.fn();
-        const tester = doWhen(start).with(s => s.value);
+        const tester = doWhen(start).map(s => s.value);
 
         const obj1 = "object 1"
         tester({ value: obj1 });

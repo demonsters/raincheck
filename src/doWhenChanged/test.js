@@ -88,11 +88,11 @@ describe('doWhenChanged()', () => {
 
   })
 
-  describe('with()', () => {
+  describe('map()', () => {
 
       it('should work', () => {
         let {changed, tester} = setup()
-        tester = tester.with(s => s.value)
+        tester = tester.map(s => s.value)
         tester({value: 1})
         expect(changed).toBeCalledWith(1, undefined, expect.anything())
       })

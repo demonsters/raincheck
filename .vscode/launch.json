@@ -1,0 +1,22 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+          "type": "node",
+          "request": "launch",
+          "name": "Tests",
+          "program": "${workspaceRoot}/node_modules/jest-cli/bin/jest.js",
+          "args": ["--runInBand", "--no-cache"],
+          "cwd": "${workspaceRoot}",
+          // "port": 5858,
+          "sourceMaps": true,
+          "env": {
+              "NODE_ENV": "development"
+          },
+         "console": "internalConsole"
+        },
+    ]
+}

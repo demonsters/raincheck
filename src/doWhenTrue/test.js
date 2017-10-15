@@ -84,7 +84,7 @@ describe("doWhenTrue()", () => {
       const start = jest.fn();
       const tester = doWhenTrue(start)
         .map(s => s.value)
-        .map(s => s.value1);
+        .map(s => s.value1)
 
       tester({ value: { value1: false } });
       expect(start).not.toBeCalled();

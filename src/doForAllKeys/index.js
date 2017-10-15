@@ -1,55 +1,48 @@
 import createNext from './../_libs/createNext';
+import createConstruct from '../_libs/createConstruct';
 
 
-const doForAllKeys = (selector, constructMock, destructMock) => (constructFunc) => {
+export default function doForAllKeys(constructFunc) {
 
-  let cachedObjects = []
-  let destructFuncs = {}
+  return createConstruct((selector, constructMock, destructMock) => {
 
-  // Create the next function
-  // const createNext = key => destructFunc => {
-  //   destructFuncs[key] = destructFunc
-  // }
+    let cachedObjects = []
+    let destructFuncs = {}
 
-  const construct = (state, ...args) => {
+    return (state, ...args) => {
 
-    const objects = selector(state)
+      const objects = selector(state)
 
-    if (objects === cachedObjects) {
-      return
-    }
+      if (objects === cachedObjects) {
+        return
+      }
 
-    let destructObjects = cachedObjects.concat()
+      let destructObjects = cachedObjects.concat()
 
-    objects.forEach(key => {
-      if (cachedObjects.indexOf(key) === -1) {
-        if (constructMock) {
-          constructMock(constructFunc, key)
-        } else {
-          destructFuncs[key] = createNext(next => constructFunc(key, next, ...args))
+      objects.forEach(key => {
+        if (cachedObjects.indexOf(key) === -1) {
+          if (constructMock) {
+            constructMock(constructFunc, key)
+          } else {
+            destructFuncs[key] = createNext(next => constructFunc(key, next, ...args))
+          }
         }
-      }
-      // Remove so it will not be destructed below
-      const index = destructObjects.indexOf(key)
-      if (index > -1) {
-        destructObjects.splice(index, 1);
-      }
-    })
+        // Remove so it will not be destructed below
+        const index = destructObjects.indexOf(key)
+        if (index > -1) {
+          destructObjects.splice(index, 1);
+        }
+      })
 
-    destructObjects.forEach(key => {
-      if (destructFuncs[key]) {
-        destructFuncs[key](destructObjects[key])
-      }
-    })
+      destructObjects.forEach(key => {
+        if (destructFuncs[key]) {
+          destructFuncs[key](destructObjects[key])
+        }
+      })
 
-    cachedObjects = objects
+      cachedObjects = objects
 
-  }
-
-  construct.mock = (constructMock, destructMock) => doForAllKeys(selector, constructMock, destructMock)(constructFunc)
-  construct.with = (selector) => doForAllKeys(selector)(constructFunc)
-  construct.map = construct.with
-  return construct
+    }
+  })
 }
 
-export default doForAllKeys(s => s)

@@ -168,10 +168,10 @@ describe('doForAll()', () => {
   })
 
 
-  describe("with()", () => {
+  describe("map()", () => {
     it("should called", () => {
       const start = jest.fn();
-      const tester = doForAll(start).with(s => s.value);
+      const tester = doForAll(start).map(s => s.value);
 
       const obj1 = "object 1"
       tester({ value: {key: obj1} });
@@ -195,7 +195,7 @@ describe('doForAll()', () => {
 
       const spy = jest.fn()
       const tester = doForAll(sendLogin)
-        .with(s => s.loggedUsers)
+        .map(s => s.loggedUsers)
         .mock(spy)
 
       tester(state)

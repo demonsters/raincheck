@@ -1,5 +1,5 @@
 import createNext from './../_libs/createNext';
-
+import createConstruct from '../_libs/createConstruct'
 
 function shallowDiffers (a, b) {
   if (a === b) return false
@@ -10,53 +10,50 @@ function shallowDiffers (a, b) {
 }
 
 
-const doWhen = (selector, constructMock, destructMock) => (checkFunc) => {
-  let destructFuncs = {}
-  let destructKeys
+export default function doWhen(checkFunc) {
 
-  const callFunc = () => (func, args, key) => {
+  return createConstruct((selector, constructMock, destructMock) => {
 
-    const index = destructKeys.indexOf(key)
-    if (index > -1) destructKeys.splice(index, 1)
+    let destructFuncs = {}
+    let destructKeys
 
-    if (destructFuncs[key] === undefined) {
-      if (constructMock) {
-        constructMock(func, args, key)
-      } else {
-        destructFuncs[key] = createNext(next => func(...args, next))
-      }
-      if (destructMock) {
-        destructFuncs[key] = () => destructMock(key)
-      }
-      if (!destructFuncs[key]) {
-        destructFuncs[key] = null
-      }
-    }
-  }
+    const callFunc = (func, args, key) => {
 
-  let oldState = {}
+      const index = destructKeys.indexOf(key)
+      if (index > -1) destructKeys.splice(index, 1)
 
-  const construct = (state) => {
-    const newState = selector(state)
-    if (shallowDiffers(oldState, newState)) {
-      destructKeys = Object.keys(destructFuncs)
-      checkFunc(newState, callFunc())
-
-      destructKeys.forEach(key => {
-        if (destructFuncs[key]) {
-          destructFuncs[key]()
+      if (destructFuncs[key] === undefined) {
+        if (constructMock) {
+          constructMock(func, args, key)
+        } else {
+          destructFuncs[key] = createNext(next => func(...args, next))
         }
-      })
-
-      oldState = newState
+        if (destructMock) {
+          destructFuncs[key] = () => destructMock(key)
+        }
+        if (!destructFuncs[key]) {
+          destructFuncs[key] = null
+        }
+      }
     }
-  }
-  construct.with = (selector) => doWhen(selector, constructMock, destructMock)(checkFunc)
-  construct.mock = (call, destruct) => doWhen(selector, call, destruct)(checkFunc)
-  construct.map = construct.with
-  return construct
 
+    let oldState = {}
+
+    return (state, args) => {
+      const newState = selector(state)
+      if (shallowDiffers(oldState, newState)) {
+        destructKeys = Object.keys(destructFuncs)
+        checkFunc(newState, callFunc)
+
+        destructKeys.forEach(key => {
+          if (destructFuncs[key]) {
+            destructFuncs[key]()
+          }
+        })
+
+        oldState = newState
+      }
+    }
+  })
 }
-
-export default doWhen(s => s)
 
