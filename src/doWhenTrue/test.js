@@ -59,6 +59,27 @@ describe("doWhenTrue()", () => {
     expect(firstEnd).not.toBeCalled();
   });
 
+  it('should reset old state for new map? bit of a rare situation I guess', () => {
+
+    const started = jest.fn();
+    const ended = jest.fn();
+    const tester = doWhenTrue(() => {
+      started()
+      return ended
+    });
+    tester(true)
+
+    const tester2 = tester.map(s => s.value)
+    tester2({value: true})
+    expect(started).toHaveBeenCalledTimes(2)
+    tester(false)
+    expect(ended).toHaveBeenCalledTimes(1)
+
+    tester2({value: false})
+    expect(ended).toHaveBeenCalledTimes(2)
+
+  })
+
   describe("map()", () => {
 
     it("should call when true", () => {

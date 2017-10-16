@@ -19,6 +19,15 @@ export default function doWhen(checkFunc) {
 
     const callFunc = (func, args, key) => {
 
+      if (key === undefined) {
+        if (typeof args === 'string') {
+          key = args
+          args = []
+        } else if (args.length > 0 && typeof args[0] === 'string') {
+          key = args[0]
+        }
+      }
+
       const index = destructKeys.indexOf(key)
       if (index > -1) destructKeys.splice(index, 1)
 

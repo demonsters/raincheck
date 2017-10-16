@@ -1,6 +1,6 @@
 // @flow
 
-import doWhen, {withMockFunctions} from '.'
+import doWhen from '.'
 
 const getTester = (connectToSocket) => doWhen(
   ({isLoggedIn, url}, call) => {
@@ -10,7 +10,7 @@ const getTester = (connectToSocket) => doWhen(
   }
 )
 
-describe('generate', () => {
+describe('doWhen', () => {
 
   it('should call destructor once', () => {
 
@@ -138,112 +138,154 @@ describe('generate', () => {
 
   it('should work with arrays', () => {
 
-      const start = jest.fn();
-      const end = jest.fn();
+    const start = jest.fn();
+    const end = jest.fn();
 
-      const func = (...args) => {
-        start(...args)
-        return end
-      }
+    const func = (...args) => {
+      start(...args)
+      return end
+    }
 
-      const tester = doWhen((array, call) => {
-        array.forEach(key => call(func, [key], key) )
+    const tester = doWhen((array, call) => {
+      array.forEach(key => call(func, [key], key) )
+    })
+
+    const obj1 = "object 1"
+    const obj2 = "object 2"
+
+    // Start obj1
+    tester([obj1])
+    tester([obj1])
+    expect(start).toBeCalledWith(obj1, expect.anything())
+
+    // Start obj2
+    tester([obj1, obj2])
+    tester([obj1, obj2])
+    expect(start).toBeCalledWith(obj2, expect.anything())
+
+    // End obj1
+    tester([obj2])
+    tester([obj2])
+    expect(end).toBeCalled()
+
+    // End obj2
+    tester([])
+    expect(end).toBeCalled()
+
+    expect(start).toHaveBeenCalledTimes(2)
+    expect(end).toHaveBeenCalledTimes(2)
+
+  })
+
+  it('should pick the first argument (if is string) as key of no key is given', () => {
+
+    const start = jest.fn();
+    const end = jest.fn();
+
+    const func = (...args) => {
+      start(...args)
+      return end
+    }
+
+    const tester = doWhen((key, call) => {
+      call(func, [key])
+    })
+
+    tester("key1")
+    expect(start).toHaveBeenCalledTimes(1)
+
+    tester("key2")
+    expect(start).toHaveBeenCalledTimes(2)
+  })
+
+  it('should take the args as key if not a array', () => {
+
+    const start = jest.fn();
+    const end = jest.fn();
+
+    const func = (...args) => {
+      start(...args)
+      return end
+    }
+
+    const tester = doWhen((key, call) => {
+      call(func, key)
+    })
+
+    tester("key1")
+    expect(start).toHaveBeenCalledTimes(1)
+
+    tester("key2")
+    expect(start).toHaveBeenCalledTimes(2)
+
+  })
+
+  describe('mock()', () => {
+
+    it('should be able to mock it easily', () => {
+
+      const connectToSocket = () => {}
+
+      const listener = jest.fn()
+      const destruct = jest.fn()
+
+      let tester = getTester(connectToSocket).mock(listener, destruct)
+
+      const url = "dfgh"
+      tester({
+        isLoggedIn: true,
+        url
       })
+      expect(listener).toBeCalledWith(connectToSocket, [url], expect.anything())
+      expect(destruct).not.toBeCalled()
+      tester({
+        isLoggedIn: false,
+        url
+      })
+      expect(destruct).toBeCalled()
+
+    })
+
+
+    it('should work when with if called befere mock', () => {
+      const start = jest.fn();
+
+      const listener = jest.fn()
+      const destruct = jest.fn()
+
+      const tester = doWhen(start)
+        .map(s => s.value)
+        .mock(listener, destruct)
 
       const obj1 = "object 1"
-      const obj2 = "object 2"
-
-      // Start obj1
-      tester([obj1])
-      tester([obj1])
-      expect(start).toBeCalledWith(obj1, expect.anything())
-
-      // Start obj2
-      tester([obj1, obj2])
-      tester([obj1, obj2])
-      expect(start).toBeCalledWith(obj2, expect.anything())
-
-      // End obj1
-      tester([obj2])
-      tester([obj2])
-      expect(end).toBeCalled()
-
-      // End obj2
-      tester([])
-      expect(end).toBeCalled()
-
-      expect(start).toHaveBeenCalledTimes(2)
-      expect(end).toHaveBeenCalledTimes(2)
-
+      tester({ value: obj1 });
+      expect(start).toBeCalledWith(obj1, expect.anything());
     })
 
+    it('should work when value is not an object', () => {
+      const start = jest.fn();
 
-    describe('mock()', () => {
+      const listener = jest.fn()
+      const destruct = jest.fn()
 
-      it('should be able to mock it easily', () => {
+      const tester = doWhen(start)
+        .mock(listener, destruct)
 
-        const connectToSocket = () => {}
-
-        const listener = jest.fn()
-        const destruct = jest.fn()
-
-        let tester = getTester(connectToSocket).mock(listener, destruct)
-
-        const url = "dfgh"
-        tester({
-          isLoggedIn: true,
-          url
-        })
-        expect(listener).toBeCalledWith(connectToSocket, [url], expect.anything())
-        expect(destruct).not.toBeCalled()
-        tester({
-          isLoggedIn: false,
-          url
-        })
-        expect(destruct).toBeCalled()
-
-      })
-
-
-      it('should work when with if called befere mock', () => {
-        const start = jest.fn();
-
-        const listener = jest.fn()
-        const destruct = jest.fn()
-
-        const tester = doWhen(start)
-          .map(s => s.value)
-          .mock(listener, destruct)
-
-        const obj1 = "object 1"
-        tester({ value: obj1 });
-        expect(start).toBeCalledWith(obj1, expect.anything());
-      })
-
-      it('should work when value is not an object', () => {
-        const start = jest.fn();
-
-        const listener = jest.fn()
-        const destruct = jest.fn()
-
-        const tester = doWhen(start)
-          .mock(listener, destruct)
-
-        tester(true);
-        expect(start).toBeCalled();
-      })
-
+      tester(true);
+      expect(start).toBeCalled();
     })
 
-    describe("map()", () => {
-      it("should called with object", () => {
-        const start = jest.fn();
-        const tester = doWhen(start).map(s => s.value);
+  })
 
-        const obj1 = "object 1"
-        tester({ value: obj1 });
-        expect(start).toBeCalledWith(obj1, expect.anything());
-      });
+  describe("map()", () => {
+    it("should called with object", () => {
+      const start = jest.fn();
+      const tester = doWhen(start).map(s => s.value);
+
+      const obj1 = "object 1"
+      tester({ value: obj1 });
+      expect(start).toBeCalledWith(obj1, expect.anything());
     });
+  });
 
 })
