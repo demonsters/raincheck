@@ -1,15 +1,13 @@
-
 # Raincheck
 
 Do something when the conditions are right and cancel them if they're not.
 
-Say you want to connect to a socket when you are logged in, and want to disconnect when not.
-But you can only connect once the socket url is known.
+Say you want to connect to a socket when you’re logged in and want to disconnect when you’re not. This can only work once the socket url is known.
 
-If you know react, you know that it is particularly good in does tips of situations.
-But a socket is not a `react` element, you could wrap in in one (start in componentDidMound, end in componentWillUnmount), but that's a bit akward.
+If you know react, you know that it’s pretty good in these types of situaties. The thing is, a socket isn’t a react element. You could wrap it as react element (start in componentDidMount, end in componentWillUnmount), but that’s a bit awkward. 
 
-Here comes raincheck to the rescue. Inspired by react & redux:
+This is where raincheck comes to the rescue. Inspired by react & redux.
+
 
 ```javascript
 
@@ -42,7 +40,7 @@ raincheck({
 
 `Raincheck` works with key's the same way react does. It's the third argument of the `call` function.
 
-The `connectToSocket()` can be any function. This function can return an cancel function, which in this case closes the socket:
+The `connectToSocket()` can be any function. This function can return a cancel function, which in this case will close the socket:
 
 ```javascript
 const connectToSocket = (api, url) => {
@@ -54,8 +52,8 @@ const connectToSocket = (api, url) => {
 
 # Redux
 
-`Raincheck` is particular great when used with Redux.
-To connect to a store you can use `createMiddleware()`, like so:
+`Raincheck` is particularly great when used with Redux.
+To connect to a store you use `createMiddleware()`, like so:
 
 ```javascript
 
@@ -69,9 +67,9 @@ createMiddleware(
 
 ```
 
-The state will be passed in as the first argument. Everytime the state changed this will be called. 
+Each time the state changes the function passed into doWhen will be called. The state will be passed in as the first argument of this function.
 
-To narrow down the state, you can use the `map()` function, it does a shallow equal and prevent calls if they did not change (like `mapStateToProps` in the `connect()` from `react-redux`):
+To narrow down the state, you can use the `map()` function. It does a shallow equal and prevent calls when they don’t change (like `mapStateToProps` in the `connect()` from `react-redux`):
 
 ```javascript
 
@@ -127,19 +125,58 @@ it('should connect to socket', () => {
 
 # Shorthand functions
 
-TODO
-
 ## doWhenTrue
 
+```javascript
+doWhenTrue(connectToSocket)
+```
+
+Is comparable to:
+
+```javascript
+doWhen(state => {
+  if (state) call(connectToSocket)
+})
+```
+
 ## doWhenChanged
+doWhenChanged isn't really comparable to anything we can do with doWhen
 
 ## doForAll
+```javascript
+doForAll(connectToSocket)
+```
+
+Is comparable to:
+
+```javascript
+doWhen(state => {
+  Object.keys(state).forEach(key => {
+    call(connectToSocket, [state[key]], key)
+  })
+})
+```
 
 ## doForAllKeys
+```javascript
+doForAllKeys(connectToSocket)
+```
 
+Is comparable to:
+
+```javascript
+doWhen(state => {
+  state.forEach(key => call(connectToSocket, [key], key))
+})
+```
 
 # Chaining API
 
-TODO
+Say the socket is disconnected and you fire up a timeout to reconnect. Whenever the conditions change the cancel function will be called. In this situation you don't want to call the socket.close(), but you do want to clear the timeout.
+
+For this situation you can use the chaining API.
+
+The last argument of the construct function contains the functions of the chaining API. This makes it possible to 'register' a new destruct function and opt-out of the current destruct function by using `next()`. If the current action isn’t finished yet you can use `branch()`.
+
 
 
