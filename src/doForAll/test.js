@@ -1,3 +1,4 @@
+// @flow
 
 import doForAll from '.'
 
@@ -8,7 +9,21 @@ describe('doForAll()', () => {
     const end = jest.fn();
     const changed = jest.fn();
 
-    const tester = doForAll(s => s, (...args) => {
+    // TODO:
+
+    // doForAll(s => s, fnc)
+    // doForAll(undefined, fnc)
+    // or
+    // doForAll(s => s)(fnc)
+    // doForAll()(fnc)
+    // or
+    // doForAll(fnc).with(s => s)
+    // doForAll(fnc)
+    // or
+    // forAll(s => s).do(fnc)
+    // forAll().do(fnc)
+
+    const tester = doForAll((...args) => {
       start(...args)
       return () => end(...args)
     }, changed)
@@ -136,7 +151,7 @@ describe('doForAll()', () => {
       return secondEnd
     }
 
-    const tester = doForAll(s => s, doTest1)
+    const tester = doForAll(doTest1)
 
     tester({key: "string"})
     expect(firstStart).toBeCalled()
@@ -153,5 +168,42 @@ describe('doForAll()', () => {
   })
 
 
+  describe("map()", () => {
+    it("should called", () => {
+      const start = jest.fn();
+      const tester = doForAll(start).map(s => s.value);
+
+      const obj1 = "object 1"
+      tester({ value: {key: obj1} });
+      expect(start).toBeCalledWith(obj1, expect.anything());
+    });
+  });
+
+
+  describe("mock()", () => {
+
+    it('should be testable', () => {
+
+      const user1 = { name: "user 1" }
+      const user2 = { name: "user 2" }
+
+      const state = {
+        loggedUsers: {"1": user1, "2": user2}
+      }
+
+      const sendLogin = (userId) => {}
+
+      const spy = jest.fn()
+      const tester = doForAll(sendLogin)
+        .map(s => s.loggedUsers)
+        .mock(spy)
+
+      tester(state)
+
+      expect(spy).toBeCalledWith(sendLogin, user1)
+      expect(spy).toBeCalledWith(sendLogin, user2)
+
+    })
+  })
 
 })

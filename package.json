@@ -1,32 +1,34 @@
 {
-  "name": "redux-do-when",
+  "name": "raincheck",
   "version": "0.0.1",
-  "description": "Libraries",
-  "main": "src/index.js",
+  "description": "Do something when the conditions are right and cancel them if they're not.",
+  "main": "lib/index.js",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
     "preversion": "npm test && npm run build",
+    "benchmark": "babel-node ./src/doWhenTrue/benchmark.js",
     "build": "babel src/ -d lib/ --ignore **/__tests__/*.jsx,**/__tests__/*.js,**/**/test.js,**/**/*.js.flow && node ./scripts/copy.js"
   },
   "repository": {
     "type": "git",
-    "url": "git@git.demonsters.com:stijn/redux-do-when.git"
+    "url": "https://github.com/demonsters/raincheck"
   },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-  },
+  "author": "Stijn van der Laan <stijn@demonsters.com>",
+  "license": "MIT",
+  "dependencies": {},
   "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-cli": "^6.18.0",
     "babel-preset-latest": "^6.16.0",
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-2": "^6.17.0",
-    "jest": "^19.0.2",
-    "find": "^0.2.7",
-    "fs-extra": "^4.0.1",
-    "babel": "^6.5.2",
-    "babel-cli": "^6.18.0",
     "babel-register": "^6.16.3",
+    "benchmark": "^2.1.4",
+    "find": "^0.2.7",
+    "flow-bin": "^0.54.0",
+    "fs-extra": "^4.0.1",
+    "jest": "^19.0.2",
     "redux": "^3.6.0"
   }
 }

@@ -120,8 +120,6 @@ describe('createNext', () => {
 
   })
 
-
-
   it('Should destruct when resolve is called', () => {
 
     const firstStart = jest.fn();
@@ -163,7 +161,7 @@ describe('createNext', () => {
   })
 
 
-  it('Should destruct when first argument === false', () => {
+  xit('Should destruct when first argument === false', () => {
 
     const firstStart = jest.fn();
     const firstEnd = jest.fn();

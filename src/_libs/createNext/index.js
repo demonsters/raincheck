@@ -1,7 +1,7 @@
 
 const createNext = (parentFunc) => {
 
-  let doNext = (...creators) => {
+  let doNext = doDestruct => (...creators) => {
 
     // call all creators, and add the destruct returns into an array
     let destructs = creators
@@ -34,20 +34,23 @@ const createNext = (parentFunc) => {
 
     // Create a new destruct which calls all destructs
     const destruct = (...args) => {
-      destructs.forEach(destruct => destruct && destruct(...args))
+      destructs.forEach(destruct => {
+        destruct && typeof destruct === 'function' && destruct(...args)
+      })
       destructs.length = 0
     }
 
-    parentFunc(destruct, creators[0] !== false)
+    parentFunc(destruct, doDestruct)
 
     return destruct
   }
 
-  let next = (...args) => doNext(...args)
-  next.branch = (...args) => doNext(false, ...args)
-  next.complete = doNext
-  next.resolve = doNext
-  next.chain = doNext
+  let next = doNext(true)
+  next.branch = doNext(false)
+  next.complete = next
+  next.resolve = next
+  next.chain = next
+  next.next = next
 
   return next
 }

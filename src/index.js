@@ -1,12 +1,18 @@
 
-// TODO: More unit tests?
-// TODO: flow
-
 import doWhen from './doWhen'
+import doWhenTrue from './doWhenTrue'
 import doWhenChanged from './doWhenChanged'
+import createMiddleware from './createMiddleware'
 import doForAll from './doForAll'
 import doForAllKeys from './doForAllKeys'
-import createMiddleware from './createMiddleware'
 
-// doForAllObjects ??
-// doFor ??
+export {
+  doWhen,
+  doWhenTrue,
+  doWhenChanged,
+  doForAll,
+  doForAllKeys,
+  createMiddleware
+}
+
+export default doWhen
