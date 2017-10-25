@@ -1,6 +1,6 @@
 {
   "name": "raincheck",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Do something when the conditions are right and cancel them if they're not.",
   "main": "lib/index.js",
   "scripts": {
