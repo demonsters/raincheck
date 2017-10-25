@@ -22,9 +22,7 @@ export default function doWhen(checkFunc) {
       if (key === undefined) {
         if (typeof args === 'string') {
           key = args
-          args = []
-        } else if (args.length > 0 && typeof args[0] === 'string') {
-          key = args[0]
+          args = [key]
         }
       }
 

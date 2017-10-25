@@ -177,7 +177,8 @@ describe('doWhen', () => {
 
   })
 
-  it('should pick the first argument (if is string) as key of no key is given', () => {
+  // This is unexpected behaviour
+  xit('should pick the first argument (if is string) as key of no key is given', () => {
 
     const start = jest.fn();
     const end = jest.fn();
@@ -213,9 +214,11 @@ describe('doWhen', () => {
     })
 
     tester("key1")
+    expect(start).toBeCalledWith("key1", expect.anything())
     expect(start).toHaveBeenCalledTimes(1)
 
     tester("key2")
+    expect(start).toBeCalledWith("key2", expect.anything())
     expect(start).toHaveBeenCalledTimes(2)
 
   })

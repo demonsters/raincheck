@@ -13,7 +13,7 @@ This is where raincheck comes to the rescue. Inspired by react & redux.
 
 import { doWhen } from 'raincheck'
 
-const raincheck = doWhen({isLoggedIn, url}, call) => {
+const connectToSocketWhen = doWhen(({isLoggedIn, url}, call) => {
   if (isLoggedIn && !!url) {
     call(connectToSocket, [url], url) 
   }
@@ -21,10 +21,10 @@ const raincheck = doWhen({isLoggedIn, url}, call) => {
 
 ```
 
-This will connect to the socket when the following is called:
+This will trigger `connectToSocket()` when the following is called:
 
 ```javascript
-raincheck({
+connectToSocketWhen({
   isLoggedIn: true,
   url: 'ws://socketurl'
 })
@@ -33,17 +33,32 @@ raincheck({
 And disconnect when:
 
 ```javascript
-raincheck({
+connectToSocketWhen({
   isLoggedIn: false
 })
 ```
 
-`Raincheck` works with key's the same way react does. It's the third argument of the `call` function.
+When you call `connectToSocketWhen` again with the same arguments it will not trigger `connectToSocket()` or disconnect. 
+To do this `raincheck` works with key's, the same way react does. It's the third argument of the `call` function. 
+When the first argument is a string instead of an array it will be used as key and is passed in as argument to `connectToSocket()`, 
+so the example above could be simplified to:
+
+```javascript
+
+import { doWhen } from 'raincheck'
+
+const connectToSocketWhen = doWhen(({isLoggedIn, url}, call) => {
+  if (isLoggedIn && !!url) {
+    call(connectToSocket, url) 
+  }
+})
+
+```
 
 The `connectToSocket()` can be any function. This function can return a cancel function, which in this case will close the socket:
 
 ```javascript
-const connectToSocket = (api, url) => {
+const connectToSocket = (url) => {
   const socket = new WebSocket()
   socket.connect(url)
   return () => socket.close()
@@ -67,9 +82,9 @@ createMiddleware(
 
 ```
 
-Each time the state changes the function passed into doWhen will be called. The state will be passed in as the first argument of this function.
-
-To narrow down the state, you can use the `map()` function. It does a shallow equal and prevent calls when they don’t change (like `mapStateToProps` in the `connect()` from `react-redux`):
+Each time the state changes the function passed into `doWhen` will be called. The state will be passed in as the first argument of this function. It does a shallow equal to prevent calls when the state didn't changed.
+To narrow down the state, to prevent the function from being called when unrelated state changed, you can use the `map()` function, 
+it works a bit like the first argument (`mapStateToProps`) in the `connect()` from `react-redux`:
 
 ```javascript
 
@@ -94,7 +109,7 @@ With the `mock()` function you can easily test your setup:
 
 ```javascript
 
-// Imported from other file
+const connectToSocket = () => {}
 
 const connectToSocketWhen = doWhen(
   ({isLoggedIn, url}, call) => {
@@ -105,8 +120,6 @@ const connectToSocketWhen = doWhen(
 )
 
 it('should connect to socket', () => {
-
-  const connectToSocket = () => {}
 
   const listener = jest.fn()
   const destruct = jest.fn()
@@ -140,7 +153,18 @@ doWhen(state => {
 ```
 
 ## doWhenChanged
-doWhenChanged isn't really comparable to anything we can do with doWhen
+doWhenChanged isn't really comparable to anything we can do with doWhen.
+The example below will reconnect to the socket when the url has been changed:
+
+```javascript
+const connectToSocket = (newURL, oldURL) => {
+  if (!newURL) return
+  const socket = new WebSocket()
+  socket.connect(newURL)
+  return () => socket.close()
+}
+doWhenChanged(connectToSocket)
+```
 
 ## doForAll
 ```javascript
