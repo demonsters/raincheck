@@ -1,7 +1,7 @@
 // @flow
 
 import doForAllKeys from '.'
-import type { ChainAPI } from '../index';
+import {ChainAPI} from '../_libs/createChainAPI'
 
 describe('doForAllKeys()', () => {
 
@@ -84,7 +84,6 @@ describe('doForAllKeys()', () => {
 
 
   describe("map()", () => {
-
     it("should called", () => {
       const start = jest.fn();
       const tester = doForAllKeys(start).map(s => s.value);
@@ -93,23 +92,6 @@ describe('doForAllKeys()', () => {
       tester({ value: [obj1] });
       expect(start).toBeCalledWith(obj1, expect.anything());
     });
-
-    // Add filter? map each?
-    // it("should call with multiple maps", () => {
-    //   const start = jest.fn();
-    //   type Project = {
-    //     todos: Todo[]
-    //   }
-    //   type Todo = {
-    //     id: string,
-    //   }
-    //   const tester = doForAllKeys(start)
-    //     .map((s: Todo) => s.id)
-    //     .map((s: Project) => s.todos)
-
-    //   tester({ todos: { id: "saf" } });
-    //   expect(start).toBeCalled();
-    // });
   });
 
 
@@ -123,8 +105,7 @@ describe('doForAllKeys()', () => {
       }
 
       const state = {
-        loggedUsers: ["1", "2"],
-        userName: ""
+        loggedUsers: ["1", "2"]
       }
 
       const sendLogin = (userId: string) => {}

@@ -1,0 +1,11 @@
+// @flow
+import type {ChainAPI} from '../createChainAPI'
+
+type ConstructFunction<S, P> = (value: S, next: ChainAPI, ...args: P) => ?DestructFunction
+type DestructFunction = () => void
+
+export type DoWhen<O, I, P = Array<any>> = {
+  (state: I, ...rest: P): void,
+  map: <NI: any>(map: (s: NI) => I) => DoWhen<O, NI, P>,
+  mock: (construct: ConstructFunction<O, P>, destruct?: DestructFunction) => DoWhen<O, I, P>
+}

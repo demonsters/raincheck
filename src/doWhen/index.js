@@ -1,4 +1,4 @@
-import createNext from './../_libs/createNext';
+import createNext from './../_libs/createChainAPI';
 import createConstruct from '../_libs/createConstruct'
 
 function shallowDiffers (a, b) {
@@ -17,12 +17,13 @@ export default function doWhen(checkFunc) {
     let destructFuncs = {}
     let destructKeys
 
-    const callFunc = (func, args, key) => {
+    const callFunc = (func, props, key) => {
 
       if (key === undefined) {
-        if (typeof args === 'string') {
-          key = args
-          args = [key]
+        if (typeof props === 'string') {
+          key = props
+        } else {
+          key = "default"
         }
       }
 
@@ -31,9 +32,9 @@ export default function doWhen(checkFunc) {
 
       if (destructFuncs[key] === undefined) {
         if (constructMock) {
-          constructMock(func, args, key)
+          constructMock(func, props, key)
         } else {
-          destructFuncs[key] = createNext(next => func(...args, next))
+          destructFuncs[key] = createNext(next => func(props, next))
         }
         if (destructMock) {
           destructFuncs[key] = () => destructMock(key)

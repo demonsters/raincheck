@@ -1,11 +1,13 @@
 // @flow
+import type {ChainAPI} from '../_libs/createChainAPI'
 
-import type {MiddlewareAPI, Middleware} from 'redux'
-
-type NextFunction = (destructFunction: DestructFunction) => void
 type DestructFunction = () => void
-type ConstructFunction<S, A> = (next: NextFunction, param: MiddlewareAPI<S, A>) => DestructFunction
+type ConstructFunction<P> = (next: ChainAPI, ...args: P) => ?DestructFunction
 
-type DoWhen<S> = (state: S, ...rest: Array<*>) => void
+export type DoWhen<I, P = Array<any>> = {
+  (state: I, ...rest: P): void,
+  map: <NI>(map: (s: NI) => I) => DoWhen<NI, P>,
+  mock: (construct: ConstructFunction<P>, destruct?: DestructFunction) => DoWhen<I, P>
+}
 
-declare export default function doWhen<S, A> (selector: (state: S) => boolean, func: ConstructFunction<S, A> ): DoWhen<S>
+declare export default function doWhenTrue<P>(func: ConstructFunction<P>): DoWhen<boolean>

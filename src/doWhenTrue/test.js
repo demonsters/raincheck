@@ -1,3 +1,5 @@
+// @flow
+
 import doWhenTrue from ".";
 
 describe("doWhenTrue()", () => {
@@ -49,7 +51,9 @@ describe("doWhenTrue()", () => {
     tester(true);
     expect(firstStart).toBeCalled();
 
-    nextHandler();
+    if (nextHandler) {
+      nextHandler();
+    }
 
     expect(secondStart).toBeCalled();
 
@@ -84,7 +88,10 @@ describe("doWhenTrue()", () => {
 
     it("should call when true", () => {
       const start = jest.fn();
-      const tester = doWhenTrue(start).map(s => s.value);
+      type State = {
+        value: boolean
+      }
+      const tester = doWhenTrue(start).map((s: State) => s.value);
 
       tester({ value: true });
       expect(start).toBeCalled();
@@ -92,9 +99,15 @@ describe("doWhenTrue()", () => {
 
     it("should call with multiple maps", () => {
       const start = jest.fn();
+      type State1 = {
+        value: State2
+      }
+      type State2 = {
+        value1: boolean
+      }
       const tester = doWhenTrue(start)
-        .map(s => s.value)
-        .map(s => s.value1);
+        .map((s: State2) => s.value1)
+        .map((s: State1) => s.value)
 
       tester({ value: { value1: true } });
       expect(start).toBeCalled();
@@ -103,9 +116,15 @@ describe("doWhenTrue()", () => {
 
     it("should NOT call with multiple maps value = false", () => {
       const start = jest.fn();
+      type State1 = {
+        value: State2
+      }
+      type State2 = {
+        value1: boolean
+      }
       const tester = doWhenTrue(start)
-        .map(s => s.value)
-        .map(s => s.value1)
+        .map((s: State2) => s.value1)
+        .map((s: State1) => s.value)
 
       tester({ value: { value1: false } });
       expect(start).not.toBeCalled();
@@ -114,7 +133,10 @@ describe("doWhenTrue()", () => {
 
     it("should NOT call when false", () => {
       const start = jest.fn();
-      const tester = doWhenTrue(start).map(s => s.value);
+      type State = {
+        value: boolean
+      }
+      const tester = doWhenTrue(start).map((s: State) => s.value);
 
       tester({ value: false });
       expect(start).not.toBeCalled();

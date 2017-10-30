@@ -36,7 +36,7 @@ describe('createMiddleware()', () => {
     const tester = doWhenTrue(() => {
       start()
       return end
-    }).with(s => s.active)
+    }).map(s => s.active)
 
     const reducer = (state = {active: false}, action) => {
       switch (action.type) {

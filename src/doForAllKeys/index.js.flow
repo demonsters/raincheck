@@ -1,12 +1,5 @@
 // @flow
 
-import type {MiddlewareAPI, Middleware} from 'redux'
+import type {DoWhen, ConstructFunction} from '../_libs/createConstruct'
 
-type NextFunction = (destructFunction: DestructFunction) => void
-type ConstructFunction<S, A> = (value: ?any, next: NextFunction, ...args: P) => DestructFunction
-type DestructFunction = () => void
-
-type DoWhen<S, P> = (state: S, ...rest: P) => void
-
-declare export default function doForAllKeys<S, A, P> (selector: (state: S, ...rest: P) => Array<string>, startFunc: ConstructFunction<S, A> ): DoWhen<S, P>
-
+declare export default function doForAllKeys<S, P> (startFunc: ConstructFunction<S, P> ): DoWhen<S, Array<S>, P>

@@ -1,4 +1,4 @@
-import createNext from '../_libs/createNext';
+import createNext from '../_libs/createChainAPI';
 import createConstruct from '../_libs/createConstruct'
 
 

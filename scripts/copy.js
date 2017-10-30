@@ -12,3 +12,10 @@ find.file(/\.js.flow$/, src, function(files) {
     fs.copy(file, path.resolve(lib, path.relative(src, file)))
   })
 })
+
+// Copy typescript files
+find.file(/\.d.ts$/, src, function(files) {
+  files.forEach(file => {
+    fs.copy(file, path.resolve(lib, path.relative(src, file)))
+  })
+})

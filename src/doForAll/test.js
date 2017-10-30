@@ -1,4 +1,4 @@
-// @flow
+// flow
 
 import doForAll from '.'
 
@@ -187,6 +187,13 @@ describe('doForAll()', () => {
       const user1 = { name: "user 1" }
       const user2 = { name: "user 2" }
 
+      type User = {
+        name: string
+      }
+      type State = {
+        loggedUsers: {[key: string]: User}
+      }
+
       const state = {
         loggedUsers: {"1": user1, "2": user2}
       }
@@ -195,7 +202,7 @@ describe('doForAll()', () => {
 
       const spy = jest.fn()
       const tester = doForAll(sendLogin)
-        .map(s => s.loggedUsers)
+        .map((s: State) => s.loggedUsers)
         .mock(spy)
 
       tester(state)

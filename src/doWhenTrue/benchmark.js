@@ -8,7 +8,9 @@ import doWhenTrue from '.'
 import doWhen from '../doWhen'
 
 
-const construct = () => /o/.test('Hello World!')
+const construct = () => {
+  /o/.test('Hello World!')
+}
 
 let doWhenTrueCount = 0
 let doWhenCount = 0
@@ -24,7 +26,7 @@ var suite = new Benchmark.Suite('doWhenTrue');
 
 suite
   .add('doWhenTrue', function () {
-    return doWhenTrueFn(doWhenTrueCount++ % 2)
+    return doWhenTrueFn(!!(doWhenTrueCount++ % 2))
   })
   .add('doWhen', function () {
     return doWhenFn(doWhenCount++ % 2)

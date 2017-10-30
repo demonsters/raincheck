@@ -1,4 +1,5 @@
-# Raincheck
+<p align="center"><img src="logo.png" width="244" width="400px"></p>
+
 
 Do something when the conditions are right and cancel them if they're not.
 
@@ -15,7 +16,7 @@ import { doWhen } from 'raincheck'
 
 const connectToSocketWhen = doWhen(({isLoggedIn, url}, call) => {
   if (isLoggedIn && !!url) {
-    call(connectToSocket, [url], url) 
+    call(connectToSocket, url, url) 
   }
 })
 
@@ -24,10 +25,12 @@ const connectToSocketWhen = doWhen(({isLoggedIn, url}, call) => {
 This will trigger `connectToSocket()` when the following is called:
 
 ```javascript
+
 connectToSocketWhen({
   isLoggedIn: true,
   url: 'ws://socketurl'
 })
+
 ```
 
 And disconnect when:
@@ -75,7 +78,7 @@ To connect to a store you use `createMiddleware()`, like so:
 createMiddleware(
   doWhen(({isLoggedIn, url}, call) => {
     if (isLoggedIn && !!url) {
-      call(connectToSocket, [url], url) 
+      call(connectToSocket, url) 
     }
   })
 )
@@ -91,7 +94,7 @@ it works a bit like the first argument (`mapStateToProps`) in the `connect()` fr
 createMiddleware(
   doWhen(({isLoggedIn, url}, call) => {
     if (isLoggedIn && !!url) {
-      call(connectToSocket, [url], url) 
+      call(connectToSocket, url) 
     }
   }).map(state => {
     return {
@@ -114,7 +117,7 @@ const connectToSocket = () => {}
 const connectToSocketWhen = doWhen(
   ({isLoggedIn, url}, call) => {
     if (isLoggedIn && !!url) {
-      call(connectToSocket, [url], url)
+      call(connectToSocket, url)
     }
   }
 )
@@ -131,12 +134,15 @@ it('should connect to socket', () => {
     isLoggedIn: true,
     url
   })
-  expect(listener).toBeCalledWith(connectToSocket, [url], expect.anything())
+  expect(listener).toBeCalledWith(connectToSocket, url, expect.anything())
 	
 })
 ```
 
 # Shorthand functions
+
+In some situations its a bit divious to write a function in doWhen, so some shorthand functions are profided. 
+All shorthand function have the `map` and `mock` functionality and can be used in `createMiddleware` or without it by calling it directly (like in the first example).
 
 ## doWhenTrue
 
@@ -176,7 +182,7 @@ Is comparable to:
 ```javascript
 doWhen(state => {
   Object.keys(state).forEach(key => {
-    call(connectToSocket, [state[key]], key)
+    call(connectToSocket, state[key], key)
   })
 })
 ```
@@ -190,7 +196,7 @@ Is comparable to:
 
 ```javascript
 doWhen(state => {
-  state.forEach(key => call(connectToSocket, [key], key))
+  state.forEach(key => call(connectToSocket, key))
 })
 ```
 
