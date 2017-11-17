@@ -1,7 +1,7 @@
 // @flow
 import type {ChainAPI} from '../createChainAPI'
 
-type ConstructFunction<S, P> = (value: S, next: ChainAPI, ...args: P) => ?DestructFunction
+export type ConstructFunction<S, P> = (value: S, next: ChainAPI, ...args: P) => ?DestructFunction
 type DestructFunction = () => void
 
 export type DoWhen<O, I, P = Array<any>> = {

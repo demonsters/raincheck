@@ -2,10 +2,21 @@
 
 import doWhen from '.'
 
-const getTester = (connectToSocket) => doWhen(
-  ({isLoggedIn, url}, call) => {
+type Props = {
+  isLoggedIn: boolean,
+  url: string,
+}
+
+type State = {
+  isLoggedIn: boolean,
+  url: string,
+  test?: number
+}
+
+const getTester = (connectToSocket: (props: Props) => any) => doWhen(
+  ({isLoggedIn, url}: State, call) => {
     if (isLoggedIn && url) {
-      call(connectToSocket, [url], url)
+      call(connectToSocket, url)
     }
   }
 )
@@ -40,7 +51,7 @@ describe('doWhen', () => {
       ({isLoggedIn, url}, call) => {
         checker()
       }
-    ).with(state => ({
+    ).map(state => ({
       isLoggedIn: state.isLoggedIn,
       url: state.url
     }))
@@ -66,7 +77,7 @@ describe('doWhen', () => {
       ({isLoggedIn, url}, call) => {
         checker()
       }
-    ).with(state => ({
+    ).map(state => ({
       isLoggedIn: state.isLoggedIn,
       url: state.url
     }))
@@ -147,7 +158,7 @@ describe('doWhen', () => {
     }
 
     const tester = doWhen((array, call) => {
-      array.forEach(key => call(func, [key], key) )
+      array.forEach(key => call(func, key) )
     })
 
     const obj1 = "object 1"
@@ -189,7 +200,7 @@ describe('doWhen', () => {
     }
 
     const tester = doWhen((key, call) => {
-      call(func, [key])
+      call(func, key)
     })
 
     tester("key1")
@@ -239,7 +250,7 @@ describe('doWhen', () => {
         isLoggedIn: true,
         url
       })
-      expect(listener).toBeCalledWith(connectToSocket, [url], expect.anything())
+      expect(listener).toBeCalledWith(connectToSocket, url, expect.anything())
       expect(destruct).not.toBeCalled()
       tester({
         isLoggedIn: false,
@@ -248,6 +259,8 @@ describe('doWhen', () => {
       expect(destruct).toBeCalled()
 
     })
+
+    // it('should be able to')
 
 
     it('should work when with if called befere mock', () => {

@@ -1,14 +1,12 @@
 
-import type {MiddlewareAPI, Middleware} from 'redux'
+import { DoWhen, DestructFunction } from '../_libs/createConstruct'
+import { ChainAPI } from '../_libs/createChainAPI';
 
-type NextFunction = (destructFunction: DestructFunction) => void
-type DestructFunction = () => void
-type ConstructFunction<P> = (next: NextFunction, ...args:P) => DestructFunction
+//
+type ConstructFunction<P> = (props: P, chainAPI?: ChainAPI) => DestructFunction
 
-type CallFunction<P: Array<any>> = (funct: ConstructFunction<P>, params: P | string, key?: string ) => void
+type CallFunction = <P>(funct: ConstructFunction<P>, props: P, key?: string ) => void
 
-type CheckerFunction<P> = (props: P, call: CallFunction) => void
+type CheckerFunction<S> = (props: S, call: CallFunction) => void
 
-type DoWhen<S> = (state: S, ...rest: Array<*>) => void
-
-declare export default function doWhen<S, P, A> (func: ConstructFunction<S, A> ): DoWhen<S>
+declare export default function doWhen<S, A> (func: CheckerFunction<S, A> ): DoWhen<S, S>

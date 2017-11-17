@@ -1,25 +1,5 @@
 // @flow
 
-import type {MiddlewareAPI, Middleware} from 'redux'
+import type {DoWhen, ConstructFunction} from '../_libs/createConstruct'
 
-export type NextFunction = {
-  (destructFunction: (next: NextFunction) => ?DestructFunction): void,
-  next: (destructFunction: (next: NextFunction) => ?DestructFunction) => void,
-  branch: (destructFunction: (next: NextFunction) => ?DestructFunction) => void,
-}
-
-type ConstructFunction<S, P> = (value: S, next: NextFunction, ...args: P) => ?DestructFunction
-type DestructFunction = () => void
-
-export type DoWhen<O, P, I = Array<O>> = {
-  (state: I, ...rest: P): void,
-  map: MapFunc<O, P, I>,
-  mock: (spy: ConstructFunction<O, P>) => DoWhen<O, P, I>
-}
-
-// NI is unknown (even when the parameter is typed), I think it a limitation in flow..
-export type MapFunc<O, P, I, NI = any> = (map: (s: NI) => I) => DoWhen<O, P, NI>
-
-
-declare export default function doForAllKeys<S, P> (startFunc: ConstructFunction<S, P> ): DoWhen<S, P>
-
+declare export default function doForAllKeys<S, P> (startFunc: ConstructFunction<S, P> ): DoWhen<S, Array<S>, P>

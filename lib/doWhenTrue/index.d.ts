@@ -1,4 +1,3 @@
-// @flow
 
 import {ChainAPI} from '../_libs/createChainAPI'
 

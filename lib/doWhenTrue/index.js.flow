@@ -7,7 +7,7 @@ type ConstructFunction<P> = (next: ChainAPI, ...args: P) => ?DestructFunction
 export type DoWhen<I, P = Array<any>> = {
   (state: I, ...rest: P): void,
   map: <NI>(map: (s: NI) => I) => DoWhen<NI, P>,
-  mock: (spy: ConstructFunction<P>) => DoWhen<I, P>
+  mock: (construct: ConstructFunction<P>, destruct?: DestructFunction) => DoWhen<I, P>
 }
 
 declare export default function doWhenTrue<P>(func: ConstructFunction<P>): DoWhen<boolean>
