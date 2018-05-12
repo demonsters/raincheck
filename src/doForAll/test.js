@@ -113,7 +113,7 @@ describe('doForAll()', () => {
 
     tester({})
 
-    expect(changed).toHaveBeenCalledTimes(2)
+    expect(changed).toHaveBeenCalledTimes(1)
 
   })
 

@@ -29,9 +29,7 @@ const forEachKey = (defaultValue, options) => {
 
   const create = (constructFunc, defaultValue, keyExtractor = s => s, changed) => {
 
-    // Objects getting mutated!!
-    let cachedObjects = {}
-
+    let cachedObjects
 
     const c = doWhen((state, call) => {
       if (state) {
@@ -43,7 +41,7 @@ const forEachKey = (defaultValue, options) => {
           const object = state[key]
           call(constructFunc, object, key)
           
-          if (changed && cachedObjects[key] !== object) {
+          if (changed && cachedObjects && cachedObjects[key] !== object) {
             changed(object, cachedObjects[key], key)
           }
         }
