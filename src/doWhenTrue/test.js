@@ -153,7 +153,7 @@ describe("doWhenTrue()", () => {
       const tester = doWhenTrue(changed).mock(spy)
 
       tester(true)
-      expect(spy).toBeCalledWith(changed)
+      expect(spy).toBeCalled()
 
     })
   })

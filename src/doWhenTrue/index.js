@@ -1,24 +1,9 @@
 import createNext from './../_libs/createChainAPI';
 import createConstruct from '../_libs/createConstruct';
+import doWhen from '../doWhen'
 
 export default function doWhenTrue(constructFunc) {
-  return createConstruct((selector, constructMock, destructMock) => {
-    let oldState
-    let destruct
-    return (state, ...args) => {
-      const newState = selector(state)
-      if (newState !== oldState) {
-        oldState = newState
-        if (newState) {
-          if (constructMock) {
-            constructMock(constructFunc)
-          } else {
-            destruct = createNext(next => constructFunc(next, ...args))
-          }
-        } else if (destruct) {
-          destruct()
-        }
-      }
-    }
+  return doWhen((state, call) => {
+    if (state) call((val, next) => constructFunc(next))
   })
 }

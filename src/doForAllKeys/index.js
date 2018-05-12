@@ -1,8 +1,13 @@
 import createNext from './../_libs/createChainAPI';
 import createConstruct from '../_libs/createConstruct';
+import doWhen from '../doWhen'
 
 
 export default function doForAllKeys(constructFunc) {
+
+  return doWhen((state, call) => {
+    state.forEach(key => call(constructFunc, key))
+  })
 
   return createConstruct((selector, constructMock, destructMock) => {
 
