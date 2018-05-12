@@ -21,13 +21,14 @@ export default function doWhenChanged(changedFunc) {
       if (newState !== oldState) {
         if (destruct) destruct()
         if (newState !== undefined) {
+          const tmp = oldState
+          oldState = newState
           if (constructMock) {
-            constructMock(changedFunc, newState, oldState) // need key?
+            constructMock(changedFunc, newState, tmp) // need key?
           } else {
-            destruct = createNext(next => changedFunc(newState, oldState, next, ...args))
+            destruct = createNext(next => changedFunc(newState, tmp, next, ...args))
           }
         }
-        oldState = newState
       }
     }
   })
