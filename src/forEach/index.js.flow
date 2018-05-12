@@ -1,0 +1,14 @@
+// @flow
+
+import type {DoWhen, ConstructFunction} from '../_libs/createConstruct'
+
+
+
+type Options<S, P> = {
+  do: ConstructFunction<S, P>,
+  keyExtractor?: (item: S, index: number) => string | number
+}
+
+
+declare export default function doForAllKeys<S, P> (startFunc: ConstructFunction<S, P> ): DoWhen<S, Array<S>, P>
+declare export default function doForAllKeys<S, P> (defaultValue: Array<S>, options: Options<S, P> | ConstructFunction<S, P> ): DoWhen<S, Array<S>, P>

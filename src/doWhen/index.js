@@ -3,6 +3,7 @@ import createConstruct from '../_libs/createConstruct'
 
 function shallowDiffers (a, b) {
   if (a === b) return false
+  if (!a || !b) return true
   if (typeof a !== 'object' || typeof b !== 'object') return true
   for (let i in a) if (!(i in b)) return true
   for (let i in b) if (a[i] !== b[i]) return true

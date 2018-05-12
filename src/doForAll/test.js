@@ -26,7 +26,7 @@ describe('doForAll()', () => {
     const tester = doForAll((...args) => {
       start(...args)
       return () => end(...args)
-    }, changed)
+    }, {changed})
 
     return {
       start,
@@ -92,8 +92,8 @@ describe('doForAll()', () => {
     expect(end).toBeCalledWith(obj1, expect.anything())
     expect(end).toBeCalledWith(obj2, expect.anything())
 
-    expect(start).toHaveBeenCalledTimes(4)
-    expect(end).toHaveBeenCalledTimes(4)
+    expect(start).toHaveBeenCalledTimes(2)
+    expect(end).toHaveBeenCalledTimes(2)
 
   })
 
@@ -109,11 +109,11 @@ describe('doForAll()', () => {
 
     tester({obj1: obj2})
     tester({obj1: obj2})
-    expect(changed).toBeCalledWith(obj2, obj1)
+    expect(changed).toBeCalledWith(obj2, obj1, "obj1")
 
     tester({})
 
-    expect(changed).toHaveBeenCalledTimes(1)
+    expect(changed).toHaveBeenCalledTimes(2)
 
   })
 
@@ -125,7 +125,7 @@ describe('doForAll()', () => {
       start(...args)
     })
 
-    tester(["test"])
+    tester({test: "test"})
     tester(null)
   })
 
@@ -207,8 +207,8 @@ describe('doForAll()', () => {
 
       tester(state)
 
-      expect(spy).toBeCalledWith(sendLogin, user1)
-      expect(spy).toBeCalledWith(sendLogin, user2)
+      expect(spy).toBeCalledWith(sendLogin, user1, expect.anything())
+      expect(spy).toBeCalledWith(sendLogin, user2, expect.anything())
 
     })
   })
