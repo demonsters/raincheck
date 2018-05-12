@@ -51,6 +51,9 @@ export default function doWhen(checkFunc) {
       const newState = selector(state)
       if (shallowDiffers(oldState, newState)) {
         destructKeys = Object.keys(destructFuncs)
+        
+        oldState = newState
+
         checkFunc(newState, callFunc)
 
         destructKeys.forEach(key => {
@@ -59,7 +62,6 @@ export default function doWhen(checkFunc) {
           }
         })
 
-        oldState = newState
       }
     }
   })
