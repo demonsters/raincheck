@@ -36,30 +36,23 @@ const forEachKey = (defaultValue, options) => {
     const c = doWhen((state, call) => {
       if (state) {
 
-        Object.keys(state).forEach((key, i) => {
+        const keys = Object.keys(state)
+        //.forEach((key, i) => {
+        for (let i = 0; i < keys.length; i++) {
+          const key = keys[i]
           const object = state[key]
           call(constructFunc, object, key)
           
-          if (cachedObjects[key] !== object && changed) {
+          if (changed && cachedObjects[key] !== object) {
             changed(object, cachedObjects[key], key)
           }
-        })
+        }
       }
 
       // Cache current objects
       cachedObjects = state
 
     })
-    // .map(o => {
-    //   if (cachedObject === o) {
-    //     return cachedValues
-    //   }
-    //   if (!o) return null
-    //   cachedObject = o
-    //   keys = Object.keys(o)
-    //   cachedValues = Object.values(o)
-    //   return cachedValues
-    // })
     if (defaultValue !== undefined) {
       c(defaultValue)
     }

@@ -57,11 +57,13 @@ export default function doWhen(checkFunc) {
 
         checkFunc(newState, callFunc)
 
-        destructKeys.forEach(key => {
+        // destructKeys.forEach(key => {
+        for (let i = 0; i < destructKeys.length; i++) {
+          const key = destructKeys[i]
           if (destructFuncs[key]) {
             destructFuncs[key]()
           }
-        })
+        }
 
       }
     }

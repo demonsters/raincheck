@@ -8,10 +8,11 @@ export default function forEach(defaultValue, options) {
 
     const c = doWhen((state, call) => {
       if (state) {
-        state.forEach((object, i) => {
+        for (let i = 0; i < state.length; i++) {
+          const object = state[i]
           const key = keyExtractor(object, i)
           call(constructFunc, object, key)
-        })
+        }
       }
     })
     if (defaultValue !== undefined) {
