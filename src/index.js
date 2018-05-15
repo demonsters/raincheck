@@ -8,6 +8,7 @@ import doForAllKeys from './doForAllKeys'
 
 import forEach from './forEach'
 import forEachKey from './forEachKey'
+import when from './when'
 
 export {
   doWhen,
@@ -17,6 +18,7 @@ export {
   doForAllKeys,
   forEach,
   forEachKey,
+  when,
   createMiddleware
 }
 
