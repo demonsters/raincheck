@@ -4,4 +4,12 @@ import type {DoWhen, ConstructFunction} from '../_libs/createConstruct'
 
 type ChangedFunction<S, P> = (newValue: S, oldValue?: S, ...args: P) => void
 
-declare export default function doForAll<S, P> (startFunc: ConstructFunction<S, P>, changedFunc?: ChangedFunction<S, P>): DoWhen<S, {[key: string]: S}, P>
+type Options<S, P> = $Exact<{
+  do: ConstructFunction<S, P>,
+  changed?: ChangedFunction<S, P>
+}>
+
+type Value<S> = { [key: string]: S } | null | false | void
+
+declare export default function doForAll<S, P> (startFunc: ConstructFunction<S, P>, changedFunc?: ChangedFunction<S, P>): DoWhen<S, Value<S>, P>
+declare export default function doForAll<S, P> (defaultValue?: Value<S>, options: Options <S, P>): DoWhen<S, Value<S>, P>

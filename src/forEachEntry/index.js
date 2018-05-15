@@ -2,9 +2,9 @@ import createNext from '../_libs/createChainAPI';
 import createConstruct from '../_libs/createConstruct'
 import doWhen from '../doWhen'
 
-const forEachKey = (defaultValue, options) => {
+const forEachEntry = (defaultValue, options) => {
 
-  const create = (constructFunc, defaultValue, keyExtractor = s => s, changed) => {
+  const create = (constructFunc, defaultValue, changed) => {
 
     let cachedObjects
 
@@ -35,7 +35,16 @@ const forEachKey = (defaultValue, options) => {
   }
 
   if (typeof defaultValue === "function") {
-    return create(defaultValue, undefined, options && options.keyExtractor, options && options.changed)
+    if (options && typeof options === "function") {
+      return forEachEntry(undefined, {
+        changed: options,
+        do: defaultValue,
+      })
+    }
+    return forEachEntry(undefined, {
+      ...options,
+      do: defaultValue,
+    })
   }
 
   if (options) {
@@ -43,9 +52,14 @@ const forEachKey = (defaultValue, options) => {
       return create(options, defaultValue)
     }
     if (options.do) {
-      return create(options.do, defaultValue, options.keyExtractor, options.changed)
+      return create(options.do, defaultValue, options.changed)
     }
   }
+
+  return {
+    do: (constructFunc, changed) => create(constructFunc, defaultValue, changed)
+  }
+
 }
 
-export default forEachKey
+export default forEachEntry

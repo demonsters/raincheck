@@ -1,4 +1,4 @@
-// flow
+// @flow
 
 import doForAll from '.'
 
@@ -26,7 +26,7 @@ describe('doForAll()', () => {
     const tester = doForAll((...args) => {
       start(...args)
       return () => end(...args)
-    }, {changed})
+    }, changed)
 
     return {
       start,
@@ -156,7 +156,7 @@ describe('doForAll()', () => {
     tester({key: "string"})
     expect(firstStart).toBeCalled()
 
-    nextHandler()
+    if (nextHandler) nextHandler()
 
     expect(secondStart).toBeCalled()
 

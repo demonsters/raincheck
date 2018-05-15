@@ -1,7 +1,7 @@
 
-import forEachKey from '../forEachKey'
+import forEachEntry from '../forEachEntry'
 
 export default (...props) => {
-  console.log("doForAll is deprecated use 'forEachKey' instead")
-  return forEachKey(...props)
+  console.log("doForAll is deprecated use 'forEachEntry' instead")
+  return forEachEntry(...props)
 }
