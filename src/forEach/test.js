@@ -21,6 +21,12 @@ describe('forEach()', () => {
     expect(start).toHaveBeenCalledTimes(1)
   })
 
+  it('should work with do function chaining', () => {
+    const start = jest.fn();
+    forEach().do(start)(['element'])
+    expect(start).toHaveBeenCalledTimes(1)
+  })
+  
   it('should work with key extractor', () => {
     const start = jest.fn();
     const element = {name: 'element', id: 1}
@@ -31,7 +37,6 @@ describe('forEach()', () => {
 
     expect(start).toBeCalledWith(element, expect.anything())
   })
-
 
   it('should call changed', () => {
 
@@ -55,5 +60,21 @@ describe('forEach()', () => {
     expect(changed).toHaveBeenCalledTimes(1)
 
   })
+
+  it('should call changed when using do function', () => {
+    const start = jest.fn();
+    const changed = jest.fn();
+    const object1 = {name: 'object1', id: 1}
+    const object2 = {name: 'object2', id: 1}
+    const recheck = forEach().do((s: typeof object1) => start(), {
+      changed,
+      keyExtractor: s => s.id
+    })
+    recheck([object1])
+    recheck([object2])
+    expect(start).toHaveBeenCalledTimes(1)
+    expect(changed).toHaveBeenCalledTimes(1)
+  })
+
 
 })

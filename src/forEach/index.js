@@ -2,30 +2,35 @@ import createNext from './../_libs/createChainAPI';
 import createConstruct from '../_libs/createConstruct';
 import doWhen from '../doWhen'
 
+const emptyObject = {}
+
 export default function forEach(defaultValue, options) {
 
-  const create = (constructFunc, defaultValue, keyExtractor = s => s, changed) => {
+  const create = (constructFunc, defaultValue, changed, keyExtractor = s => s) => {
 
     let cachedObjects
+    let newObjects
+
+    const changedFunc = changed ? (key, object, i) => {
+      if (i === 0) newObjects = {}
+      newObjects[key] = object
+      if (cachedObjects && cachedObjects[key] !== object) {
+        changed(object, cachedObjects[key], key)
+      }
+    } : () => {}
 
     const c = doWhen((state, call) => {
-      let newObjects = !!changed && {}
       if (state) {
         for (let i = 0; i < state.length; i++) {
           const object = state[i]
           const key = keyExtractor(object, i)
           call(constructFunc, object, key)
-          if (changed) {
-            newObjects[key] = object
-
-            if (cachedObjects && cachedObjects[key] !== object) {
-              changed(object, cachedObjects[key], key)
-            }
-          }
+          changedFunc(key, object, i)
         }
+        cachedObjects = newObjects
+      } else {
+        cachedObjects = emptyObject
       }
-      
-      cachedObjects = newObjects
       
     })
     if (defaultValue !== undefined) {
@@ -35,7 +40,7 @@ export default function forEach(defaultValue, options) {
   }
 
   if (typeof defaultValue === "function") {
-    return create(defaultValue, undefined, options && options.keyExtractor, options && options.changed)
+    return create(defaultValue, undefined, options && options.changed, options && options.keyExtractor)
   }
 
   if (options) {
@@ -43,13 +48,18 @@ export default function forEach(defaultValue, options) {
       return create(options, defaultValue)
     }
     if (options.do) {
-      return create(options.do, defaultValue, options.keyExtractor, options.changed)
+      return create(options.do, defaultValue, options.changed, options.keyExtractor)
     }
   }
 
-  // return {
-  //   do: (constructFunc) => create()
-  // }
+  return {
+    do: (constructFunc, options) => {
+      if (!options) {
+        return create(constructFunc, defaultValue)
+      }
+      return create(constructFunc, defaultValue, options.changed, options.keyExtractor)
+    }
+  }
 
 }
 

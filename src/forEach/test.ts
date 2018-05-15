@@ -1,126 +1,79 @@
 // @flow
 
-import doForAllKeys from '.'
+import forEach from '.'
 import {ChainAPI} from '../_libs/createChainAPI'
 
 describe('doForAllKeys()', () => {
 
-  it('should work with arrays', () => {
+  it('should work when given constructor as option do', () => {
+    const start = jest.fn();
+    forEach(['element'], {
+      do: start
+    })
+
+    expect(start).toHaveBeenCalledTimes(1)
+  })
+
+  it('should work when given constructor as function option', () => {
+    const start = jest.fn();
+    forEach(['element'], () => start())
+
+    expect(start).toHaveBeenCalledTimes(1)
+  })
+
+  it('should work with do function chaining', () => {
+    const start = jest.fn();
+    forEach().do(start)(['element'])
+    expect(start).toHaveBeenCalledTimes(1)
+  })
+  
+  it('should work with key extractor', () => {
+    const start = jest.fn();
+    const element = {name: 'element', id: 1}
+    forEach([element], {
+      do: start,
+      keyExtractor: s => s.id
+    })
+
+    expect(start).toBeCalledWith(element, expect.anything())
+  })
+
+  it('should call changed', () => {
 
     const start = jest.fn();
-    const end = jest.fn();
-
-    const tester = doForAllKeys((...args) => {
-      start(...args)
-      return () => end(...args)
+    const changed = jest.fn();
+    const obj1 = {name: "obj1", id: 1}
+    const obj2 = {name: "obj2", id: 1}
+    const tester = forEach([obj1], {
+      do: start,
+      changed,
+      keyExtractor: s => s.id
     })
-
-    const obj1 = "object 1"
-    const obj2 = "object 2"
 
     // Start obj1
-    tester([obj1])
-    tester([obj1])
-    expect(start).toBeCalledWith(obj1, expect.anything())
-
-    // Start obj2
-    tester([obj1, obj2])
-    tester([obj1, obj2])
-    expect(start).toBeCalledWith(obj2, expect.anything())
-
-    // End obj1
     tester([obj2])
-    tester([obj2])
-    expect(end).toBeCalledWith(obj1, expect.anything())
 
-    // End obj2
-    tester([])
-    expect(end).toBeCalledWith(obj2, expect.anything())
-
-    expect(start).toHaveBeenCalledTimes(2)
-    expect(end).toHaveBeenCalledTimes(2)
-
-  })
-
-
-  it('should cancel next', () => {
-
-    const firstStart = jest.fn();
-    const firstEnd = jest.fn();
-
-    const secondStart = jest.fn();
-    const secondEnd = jest.fn();
-
-    let nextHandler
-
-    const doTest1 = (string: string, next: ChainAPI) => {
-      firstStart()
-      nextHandler = () => next(doTest2)
-      return firstEnd
-    }
-
-    const doTest2 = () => {
-      secondStart()
-      return secondEnd
-    }
-
-    const tester = doForAllKeys(doTest1)
-
-    tester(["string"])
-    expect(firstStart).toBeCalled()
-
-    if (nextHandler) {
-      nextHandler()
-    }
-
-    expect(secondStart).toBeCalled()
+    expect(changed).toBeCalledWith(obj2, obj1, 1)
 
     tester([])
 
-    expect(secondEnd).toHaveBeenCalledTimes(1)
-    expect(firstEnd).not.toBeCalled()
+    expect(changed).toHaveBeenCalledTimes(1)
 
   })
 
-
-  describe("map()", () => {
-    it("should called", () => {
-      const start = jest.fn();
-      const tester = doForAllKeys(start).map(s => s.value);
-
-      const obj1 = "object 1"
-      tester({ value: [obj1] });
-      expect(start).toBeCalledWith(obj1, expect.anything());
-    });
-  });
-
-
-  describe("mock()", () => {
-
-    it('should be testable', () => {
-
-      type State = {
-        loggedUsers: Array<string>,
-        userName: string
-      }
-
-      const state = {
-        loggedUsers: ["1", "2"]
-      }
-
-      const sendLogin = (userId: string) => {}
-
-      const spy = jest.fn()
-      let tester = doForAllKeys(sendLogin)
-        .map((s: State) => s.loggedUsers)
-        .mock(spy)
-
-      tester(state)
-
-      expect(spy).toBeCalledWith(sendLogin, "1")
-      expect(spy).toBeCalledWith(sendLogin, "2")
-
+  it('should call changed when using do function', () => {
+    const start = jest.fn();
+    const changed = jest.fn();
+    const object1 = {name: 'object1', id: 1}
+    const object2 = {name: 'object2', id: 1}
+    const recheck = forEach().do((s: typeof object1) => start(), {
+      changed,
+      keyExtractor: (s: typeof object1) => s.id
     })
+    recheck([object1])
+    recheck([object2])
+    expect(start).toHaveBeenCalledTimes(1)
+    expect(changed).toHaveBeenCalledTimes(1)
   })
 
 })
