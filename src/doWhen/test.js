@@ -304,4 +304,29 @@ describe('doWhen', () => {
     });
   });
 
+
+  it('should not overflow when called recursive', () => {
+
+    let i = 0
+
+    const doFunc = () => {
+      i++
+      if (i > 1) {
+        throw new Error('Recursive error')
+      }
+      doCheck(true)
+    }
+
+    const doCheck = doWhen((value: boolean, call) => {
+      if (value) {
+        call(doFunc)
+      }
+    })
+
+    doCheck(true)
+
+    expect(i).toBe(1)
+
+  })
+
 })
