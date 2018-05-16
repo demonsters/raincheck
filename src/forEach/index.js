@@ -19,6 +19,14 @@ export default function forEach(defaultValue, options) {
       }
     } : () => {}
 
+    let selector
+    if (typeof defaultValue === "function") {
+      selector = defaultValue
+      defaultValue = undefined
+    } else {
+      selector = s => s
+    }
+
     const c = doWhen((state, call) => {
       if (state) {
         for (let i = 0; i < state.length; i++) {
@@ -31,17 +39,16 @@ export default function forEach(defaultValue, options) {
       } else {
         cachedObjects = emptyObject
       }
-      
-    })
+    }).map(selector)
     if (defaultValue !== undefined) {
       c(defaultValue)
     }
     return c
   }
 
-  if (typeof defaultValue === "function") {
-    return create(defaultValue, undefined, options && options.changed, options && options.keyExtractor)
-  }
+  // if (typeof defaultValue === "function") {
+  //   return forEach(defaultValue, undefined, options && options.changed, options && options.keyExtractor)
+  // }
 
   if (options) {
     if (typeof options === "function") {

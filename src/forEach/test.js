@@ -10,7 +10,6 @@ describe('forEach()', () => {
     forEach(['element'], {
       do: start
     })
-
     expect(start).toHaveBeenCalledTimes(1)
   })
 
@@ -34,7 +33,34 @@ describe('forEach()', () => {
       do: start,
       keyExtractor: s => s.id
     })
+    expect(start).toBeCalledWith(element, expect.anything())
+  })
 
+  it('should work when the first element is an selector', () => {
+    const start = jest.fn();
+    type Item = {
+      name: string,
+      id: number
+    }
+    const element = {name: 'element', id: 1}
+    forEach((element: Item) => [element], {
+      do: start,
+      keyExtractor: s => s.id
+    })(element)
+    expect(start).toBeCalledWith(element, expect.anything())
+  })
+
+  it('should work when the first element is an selector and do chain', () => {
+    const start = jest.fn();
+    type Item = {
+      name: string,
+      id: number
+    }
+    const element = {name: 'element', id: 1}
+    forEach((element: Item) => [element])
+      .do(start, {
+        keyExtractor: s => s.id
+      })(element)
     expect(start).toBeCalledWith(element, expect.anything())
   })
 
