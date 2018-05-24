@@ -180,11 +180,15 @@ describe('doWhen', () => {
     expect(end).toBeCalled()
 
     // End obj2
+    tester([obj1])
+    expect(start).toBeCalledWith(obj1, expect.anything())
+    expect(end).toBeCalled()
+
     tester([])
     expect(end).toBeCalled()
 
-    expect(start).toHaveBeenCalledTimes(2)
-    expect(end).toHaveBeenCalledTimes(2)
+    expect(start).toHaveBeenCalledTimes(3)
+    expect(end).toHaveBeenCalledTimes(3)
 
   })
 

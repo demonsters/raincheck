@@ -56,6 +56,7 @@ export default function doWhen(checkFunc) {
         destructKeys.forEach(key => {
           if (destructFuncs[key]) {
             destructFuncs[key]()
+            destructFuncs[key] = undefined
           }
         })
 
