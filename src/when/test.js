@@ -6,7 +6,7 @@ describe('doWhenChanged()', () => {
   const setup = () => {
     const changed = jest.fn();
     const end = jest.fn();
-    const tester = when((...args) => {
+    const tester = when().do((...args) => {
       changed(...args)
       return end
     })

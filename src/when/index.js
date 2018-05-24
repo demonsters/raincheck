@@ -47,5 +47,10 @@ const when = (defaultValue, options) => {
       return create(options.do, defaultValue)
     }
   }
+
+  return {
+    do: (constructFunc) => create(constructFunc, defaultValue)
+  }
+
 }
 export default when

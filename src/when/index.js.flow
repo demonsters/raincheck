@@ -1,7 +1,11 @@
 // @flow
 
-type DestructFunction = () => void
-type ChangedFunction<S, P> = (newValue: ?S, oldValue: ?S, ...args: P) => ?DestructFunction
-type DoWhen<S, P> = (state: S, ...rest: P) => void
+import type {DoWhen, ConstructFunction} from '../_libs/createConstruct'
 
-declare export default function doWhenChanged<S, A, P> (func: ChangedFunction<S, P> ): DoWhen<S, P>
+type Value<S> = { [key: any]: any } | null | false | void
+
+type ChainFunctions<S, I> = {
+  do: <P>(startFunc: ConstructFunction<S, P>) => DoWhen<S, I, P>
+}
+
+declare export default function when<S, I, P> (defaulValue: S | (item: I) => S): ChainFunctions<S, P>
