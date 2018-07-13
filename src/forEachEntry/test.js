@@ -28,8 +28,14 @@ describe('forEachEntry()', () => {
 
   it('should work when selector has given as defaultValue', () => {
     const start = jest.fn();
+    type ValueState = {
+      [key: string]: string
+    }
+    type State = {
+      value: ValueState
+    }
 
-    const tester = forEachEntry(s => s.value).do(start)
+    const tester = forEachEntry((s: State): ValueState => s.value).do(start)
 
     const obj1 = "object 1"
     tester({

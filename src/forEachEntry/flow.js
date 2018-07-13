@@ -32,3 +32,44 @@ const check4 = () => {
   // $ExpectError: should fail
   recheck({item1: "s"})
 }
+
+const check5 = () => {
+
+  type VideochatSettings = {
+    name: string
+  }
+
+  const settings = {
+    key: {
+      name: "string"
+    }
+  }
+
+  const connect = () => {}
+
+  const doRemote = forEachEntry((): {[key: string]: VideochatSettings} => settings).do(connect)
+    .filter((item: VideochatSettings) => !!item.name)
+
+    doRemote()
+}
+
+const check6 = () => {
+  
+  type ValueState = {
+    [key: string]: string
+  }
+  type State = {
+    value: ValueState
+  }
+
+  const tester = forEachEntry((s: State): ValueState => s.value).do((v: string) => {
+    
+  })
+
+  const obj1 = "object 1"
+  tester({
+    value: {
+      key: obj1 
+    }
+  });
+}

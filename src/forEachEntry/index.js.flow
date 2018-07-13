@@ -2,22 +2,19 @@
 
 import type {DoWhen, ConstructFunction} from '../_libs/createConstruct'
 
-type ChangedFunction<S, P> = (newValue: S, oldValue?: S, ...args: P) => void
+type ChangedFunction<O, P> = (newValue: O, oldValue?: O, ...args: P) => void
 
-type Options<S, P> = $Exact<{
-  do: ConstructFunction<S, P>,
-  changed?: ChangedFunction<S, P>
-}>
+type Value<O> = { [key: string]: O } | null | false | void
 
-type Value<S> = { [key: string]: S } | null | false | void
-
-type ChainFunctions<S, I> = {
-  do: <P>(startFunc: ConstructFunction<S, P>, changedFunc?: ChangedFunction<S, P>) => DoWhen<S, I, P>
+type ChainFunctions<O, I> = {
+  do: <P>(startFunc: ConstructFunction<O, P>, changedFunc?: ChangedFunction<O, P>) => DoWhen<O, I, P>
 }
 
-declare export default function forEachEntry<S> (defaultValue: Value<S> | void, changedFunc: ChangedFunction<S>): DoWhen<S, Value<S>>
-declare export default function forEachEntry<S, I> (defaultValue:  (item: I) => Value<S> | void, changedFunc: ChangedFunction<S>): DoWhen<S, Value<S>>
+
+declare export default function forEachEntry<O, I, P> (mapValue:  (item: I) => Value<O>, changedFunc: ChangedFunction<O, P>): DoWhen<O, I, P>
+declare export default function forEachEntry<O, I, P> (defaultValue?: Value<I>, changedFunc: ChangedFunction<O, P>): DoWhen<O, Value<I>, P>
 
 // Can't distinguish a object from an function with flow, so this will not give 
-declare export default function forEachEntry<S, I> (defaultValue?: Value<S>): ChainFunctions<S, Value<S>>
-declare export default function forEachEntry<S, I> (defaultValue?: (item: I) => Value<S>): ChainFunctions<S, I>
+declare export default function forEachEntry<O, I> (mapValue: (item: I) => Value<O>): ChainFunctions<O, I>
+declare export default function forEachEntry<O, I> (defaultValue?: Value<I>): ChainFunctions<O, Value<I>>
+ 
