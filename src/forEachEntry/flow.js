@@ -29,6 +29,6 @@ const check4 = () => {
   const recheck = forEachEntry({item1: {name: "s"}})
     .do((item: Item) => console.log(item.name))
   
-  // $ExpectError: should fail, but flow can't distinguish between an object an a function 
+  // $ExpectError: should fail
   recheck({item1: "s"})
 }
