@@ -6,7 +6,15 @@ import doWhen from '../doWhen'
 const when = (defaultValue, options) => {
 
   const create = (constructFunc, defaultValue) => {
-  
+    
+    let selector
+    if (typeof defaultValue === "function") {
+      selector = defaultValue
+      defaultValue = undefined
+    } else {
+      selector = s => s
+    }
+
     const c = createConstruct((selector, constructMock, destructMock) => {
   
       let oldState = undefined
@@ -27,7 +35,7 @@ const when = (defaultValue, options) => {
           }
         }
       }
-    })
+    }).map(selector)
     
     if (defaultValue !== undefined) {
       c(defaultValue)
@@ -35,9 +43,9 @@ const when = (defaultValue, options) => {
     return c
   }
 
-  if (typeof defaultValue === "function") {
-    return create(defaultValue, undefined)
-  }
+  // if (typeof defaultValue === "function") {
+  //   return create(defaultValue, undefined)
+  // }
 
   if (options) {
     if (typeof options === "function") {

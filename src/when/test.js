@@ -1,7 +1,7 @@
 
 import when from '.'
 
-describe('doWhenChanged()', () => {
+describe('when()', () => {
 
   const setup = () => {
     const changed = jest.fn();
@@ -56,7 +56,7 @@ describe('doWhenChanged()', () => {
     const start = jest.fn();
     const end = jest.fn();
 
-    const tester = when((...args) => {
+    const tester = when().do((...args) => {
       start(...args);
       return () => end(...args);
     });
@@ -96,7 +96,7 @@ describe('doWhenChanged()', () => {
       return secondEnd
     }
 
-    const tester = when(firstActor)
+    const tester = when().do(firstActor)
 
     tester("string1")
     expect(firstStart).toBeCalled()
@@ -133,7 +133,7 @@ describe('doWhenChanged()', () => {
 
       const spy = jest.fn()
       const changed = () => {}
-      const tester = when(changed).mock(spy)
+      const tester = when().do(changed).mock(spy)
 
       tester(user1)
       expect(spy).toBeCalledWith(changed, user1)
@@ -160,13 +160,25 @@ describe('doWhenChanged()', () => {
       doCheck(obj1)
     }
 
-    doCheck = when(doFunc)
+    doCheck = when().do(doFunc)
 
     doCheck(obj1)
 
     expect(i).toBe(1)
 
   })
+
+
+  it('should work when selector has given as defaultValue', () => {
+    const start = jest.fn();
+
+    const tester = when(s => s.value).do(start)
+
+    const obj1 = "object 1"
+    tester({ value: obj1 });
+    expect(start).toBeCalledWith(obj1, expect.anything());
+  })
+
 
 })
 

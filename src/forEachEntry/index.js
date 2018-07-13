@@ -6,6 +6,14 @@ const forEachEntry = (defaultValue, options) => {
 
   const create = (constructFunc, defaultValue, changed) => {
 
+    let selector
+    if (typeof defaultValue === "function") {
+      selector = defaultValue
+      defaultValue = undefined
+    } else {
+      selector = s => s
+    }
+
     let cachedObjects
 
     const c = doWhen((state, call, filterFunc) => {
@@ -29,25 +37,26 @@ const forEachEntry = (defaultValue, options) => {
       // Cache current objects
       cachedObjects = state
 
-    })
+    }).map(selector)
+    
     if (defaultValue !== undefined) {
       c(defaultValue)
     }
     return c
   }
 
-  if (typeof defaultValue === "function") {
-    if (options && typeof options === "function") {
-      return forEachEntry(undefined, {
-        changed: options,
-        do: defaultValue,
-      })
-    }
-    return forEachEntry(undefined, {
-      ...options,
-      do: defaultValue,
-    })
-  }
+  // if (typeof defaultValue === "function") {
+  //   if (options && typeof options === "function") {
+  //     return forEachEntry(undefined, {
+  //       changed: options,
+  //       do: defaultValue,
+  //     })
+  //   }
+  //   return forEachEntry(undefined, {
+  //     ...options,
+  //     do: defaultValue,
+  //   })
+  // }
 
   if (options) {
     if (typeof options === "function") {

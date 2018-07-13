@@ -42,6 +42,7 @@ export default function forEach(defaultValue, options) {
         cachedObjects = emptyObject
       }
     }).map(selector)
+    
     if (defaultValue !== undefined) {
       c(defaultValue)
     }

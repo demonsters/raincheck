@@ -26,5 +26,18 @@ describe('forEachEntry()', () => {
     expect(changed).toHaveBeenCalledTimes(1)
   })
 
+  it('should work when selector has given as defaultValue', () => {
+    const start = jest.fn();
+
+    const tester = forEachEntry(s => s.value).do(start)
+
+    const obj1 = "object 1"
+    tester({
+      value: {
+        key: obj1 }
+      });
+    expect(start).toBeCalledWith(obj1, expect.anything());
+  })
+
 
 })
