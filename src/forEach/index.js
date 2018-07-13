@@ -27,13 +27,15 @@ export default function forEach(defaultValue, options) {
       selector = s => s
     }
 
-    const c = doWhen((state, call) => {
+    const c = doWhen((state, call, filterFunc) => {
       if (state) {
         for (let i = 0; i < state.length; i++) {
           const object = state[i]
           const key = keyExtractor(object, i)
-          call(constructFunc, object, key)
-          changedFunc(key, object, i)
+          if (filterFunc(object, key)) {
+            call(constructFunc, object, key)
+            changedFunc(key, object, i)
+          }
         }
         cachedObjects = newObjects
       } else {

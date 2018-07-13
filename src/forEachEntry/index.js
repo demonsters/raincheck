@@ -8,7 +8,7 @@ const forEachEntry = (defaultValue, options) => {
 
     let cachedObjects
 
-    const c = doWhen((state, call) => {
+    const c = doWhen((state, call, filterFunc) => {
       if (state) {
 
         const keys = Object.keys(state)
@@ -16,10 +16,12 @@ const forEachEntry = (defaultValue, options) => {
         for (let i = 0; i < keys.length; i++) {
           const key = keys[i]
           const object = state[key]
-          call(constructFunc, object, key)
-          
-          if (changed && cachedObjects && cachedObjects[key] !== object) {
-            changed(object, cachedObjects[key], key)
+          if (filterFunc(object)) {
+            call(constructFunc, object, key)
+            
+            if (changed && cachedObjects && cachedObjects[key] !== object) {
+              changed(object, cachedObjects[key], key)
+            }
           }
         }
       }

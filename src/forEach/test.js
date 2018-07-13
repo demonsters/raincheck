@@ -103,4 +103,72 @@ describe('forEach()', () => {
   })
 
 
+  describe('filter()', () => {
+
+    it('should filter out elements', () => {
+      const start = jest.fn();
+      const tester = forEach().do(start, {
+        keyExtractor: (item) => item.name
+      })
+        .filter(s => s.filter);
+
+      const obj1 = {
+        name: "object 1",
+        filter: false
+      }
+      const obj2 = {
+        name: "object 2",
+        filter: true
+      }
+      tester([
+        obj1,
+        obj2
+      ])
+      expect(start).toHaveBeenCalledTimes(1);
+    })
+
+    it('should filter out elements', () => {
+      const start = jest.fn();
+      type Obj = {
+        name: string,
+        filter: boolean,
+        filter2: boolean,
+      }
+      const tester = forEach().do(start, {
+        keyExtractor: (item: Obj) => item.name
+      })
+        .filter(s => s.filter)
+        .filter(s => s.filter2)
+
+      const obj1 = {
+        name: "object 1",
+        filter: false,
+        filter2: true,
+      }
+      const obj2 = {
+        name: "object 2",
+        filter: true,
+        filter2: true,
+      }
+      const obj3 = {
+        name: "object 3",
+        filter2: false,
+        filter: false,
+      }
+      const obj4 = {
+        name: "object 4",
+        filter: false,
+        filter2: true,
+      }
+      tester([
+        obj1,
+        obj2,
+        obj3,
+        obj4,
+      ]);
+      expect(start).toHaveBeenCalledTimes(1);
+    })
+  })
+
+
 })

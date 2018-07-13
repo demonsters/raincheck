@@ -13,7 +13,7 @@ function shallowDiffers (a, b) {
 
 export default function doWhen(checkFunc) {
 
-  return createConstruct((selector, constructMock, destructMock) => {
+  return createConstruct((selector, constructMock, destructMock, filterFunc) => {
 
     let destructFuncs = {}
     let destructKeys
@@ -55,7 +55,7 @@ export default function doWhen(checkFunc) {
         
         oldState = newState
 
-        checkFunc(newState, callFunc)
+        checkFunc(newState, callFunc, filterFunc)
 
         // destructKeys.forEach(key => {
         for (let i = 0; i < destructKeys.length; i++) {

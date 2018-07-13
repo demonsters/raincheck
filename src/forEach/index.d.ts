@@ -1,28 +1,32 @@
+// @flow
 
-import {DoWhen, ConstructFunction} from '../_libs/createConstruct'
+import { DoWhen, ConstructFunction } from "../_libs/createConstruct";
+import { DestructFunction, ChainAPI } from "../_libs/createChainAPI";
 
-// export default function doForAllKeys<S> (startFunc: ConstructFunction<S> ): DoWhen<S, Array<S>>
+type KeyExtractor<S> = (item: S, index: number) => string | number;
 
-
-type KeyExtractor <S> = (item: S, index: number) => string | number
-
-type ChangedFunction<S> = (newValue: S, oldValue: S, key: string | number) => void
+type ChangedFunction<S> = (
+  newValue: S,
+  oldValue: S,
+  key: string | number
+) => void;
 
 type DoOptions<S> = {
-  keyExtractor?: KeyExtractor <S>,
-  changed?: ChangedFunction<S>
+  keyExtractor?: KeyExtractor<S>;
+  changed?: ChangedFunction<S>;
+};
+
+interface Options<I> extends DoOptions<I> {
+  do: <S>(value: S | I, next: ChainAPI, ...args: any[]) => void | DestructFunction;
 }
 
-interface Options<S, P> extends DoOptions<S> {
-  do: ConstructFunction<S, P>
-}
-
-export default function forEach<S, P> (startFunc: ConstructFunction<S, P> ): DoWhen<S, Array<S>, P>
-export default function forEach<S, P> (defaultValue: Array<S>, options: Options<S, P> | ConstructFunction<S, P> ): DoWhen<S, Array<S>, P>
+type ChainFunctions<S, I> = {
+  do: <P>(func: ConstructFunction<S>, options?: DoOptions<S> | ChangedFunction<S>) => DoWhen<S, I>;
+};
 
 
-type ChainFunctions<S> = {
-  do: <P>(func: ConstructFunction<S, P>, options?: DoOptions<S> | ChangedFunction<S>) => DoWhen<S, Array<S>, P>
-}
+export default function forEach<S>(defaultValue: Array<S>, options: Options<S> | ConstructFunction<S>): DoWhen<S, Array<S>>;
+export default function forEach<S, I>(mapValue: (item: I) => Array<S>, options: Options<S> | ConstructFunction<S>): DoWhen<S, I>;
 
-export default function forEach<S> (defaultValue?: Array<S> ): ChainFunctions<S>
+export default function forEach<S>(defaultValue?: Array<S>): ChainFunctions<S, Array<S>>;
+export default function forEach<S, I>(mapValue: (item: I) => Array<S>): ChainFunctions<S, I>;
