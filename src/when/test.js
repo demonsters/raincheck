@@ -69,8 +69,12 @@ describe('when()', () => {
     expect(start).toBeCalled();
     tester(false);
 
-    expect(start).toHaveBeenCalledTimes(1);
-    expect(start).toHaveBeenCalledTimes(1);
+    tester(true);
+    expect(start).toBeCalled();
+    tester(true);
+
+    expect(start).toHaveBeenCalledTimes(2);
+    expect(end).toHaveBeenCalledTimes(1);
   });
 
 
