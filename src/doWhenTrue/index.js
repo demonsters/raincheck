@@ -27,6 +27,8 @@ const doWhenTrue = (defaultValue, options) => {
             } else {
               destruct = createNext(next => constructFunc(next, ...args))
             }
+          } else {
+            oldState = false
           }
         }
       }
