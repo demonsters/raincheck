@@ -123,7 +123,7 @@ See here another example with `forEach`:
 ```javascript
 
 createMiddleware(
-  forEach((state: State) => state.sockets)
+  forEach((state) => state.sockets)
     .do(item => connectToSocket(item.url), {
       keyExtractor: item => `${item.id}+${item.url}`,
     })
