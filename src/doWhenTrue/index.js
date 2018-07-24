@@ -4,9 +4,13 @@ import createConstruct from '../_libs/createConstruct'
 
 import doWhen from '../doWhen'
 
+
+/**
+ * @deprecated use 'when' instead
+ */
 const doWhenTrue = (defaultValue, options) => {
 
-  console.log("doWhenTrue is deprecated use 'when' instead")
+  console.warn("doWhenTrue is deprecated use 'when' instead")
 
   const create = (constructFunc, defaultValue) => {
   

@@ -1,7 +1,11 @@
 
 import forEach from '../forEach'
 
+
+/**
+ * @deprecated use 'forEachKey' instead
+ */
 export default (startFunc) => {
-  console.log("doForAllKeys is deprecated use 'forEachKey' instead")
+  console.warn("doForAllKeys is deprecated use 'forEachKey' instead")
   return forEach().do(startFunc)
 }
