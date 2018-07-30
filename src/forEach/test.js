@@ -102,6 +102,21 @@ describe('forEach()', () => {
     expect(changed).toHaveBeenCalledTimes(1)
   })
 
+  it('should NOT call changed', () => {
+    const start = jest.fn();
+    const changed = jest.fn();
+    const object1 = {name: 'object1', id: 1}
+    const object2 = {name: 'object2', id: 2}
+    const recheck = forEach().do((s: typeof object1) => start(), {
+      changed,
+      keyExtractor: s => s.id
+    })
+    recheck([object1])
+    recheck([object1, object2])
+    expect(start).toHaveBeenCalledTimes(2)
+    expect(changed).not.toHaveBeenCalled()
+  })
+
 
   describe('filter()', () => {
 

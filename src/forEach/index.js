@@ -14,7 +14,7 @@ export default function forEach(defaultValue, options) {
     const changedFunc = changed ? (key, object, i) => {
       if (i === 0) newObjects = {}
       newObjects[key] = object
-      if (cachedObjects && cachedObjects[key] !== object) {
+      if (cachedObjects && cachedObjects[key] !== undefined && cachedObjects[key] !== object) {
         changed(object, cachedObjects[key], key)
       }
     } : () => {}
