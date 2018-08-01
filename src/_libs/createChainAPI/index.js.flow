@@ -5,5 +5,6 @@ export type ChainAPI = {
   (constructFunction: (next: ChainAPI) => void | ConstructFunction): void,
   next: (constructFunction: (next: ChainAPI) => void | ConstructFunction) => void,
   branch: (constructFunction: (next: ChainAPI) => void | ConstructFunction) => void,
+  fork: (constructFunction: (next: ChainAPI) => void | ConstructFunction) => void,
   finish: () => void,
 }
