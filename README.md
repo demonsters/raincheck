@@ -13,11 +13,17 @@ This is where raincheck comes to the rescue. Inspired by react & redux.
 
 import { when } from 'raincheck'
 
-const recheck = when("ws://url1").do(connectToSocket) // Will open the connection
+const check = when().do((url) => {
+  const socket = new WebSocket()
+  socket.connect(url)
+  return () => socket.close()
+}) 
+
+check("ws://url1") // Will open the connection
 
 // ... later
 
-recheck(false) // this will disconnect the socket, (can be false, null or undefined)
+check(false) // this will disconnect the socket, (can be false, null or undefined)
 
 ```
 
@@ -28,36 +34,23 @@ or when there is more than one
 
 import { forEach } from 'raincheck'
 
-const recheck = forEach(['ws://url1', 'ws://url2']).do(connectToSocket) // Opens 2 socket connections
-
-// ... later
-
-recheck(['ws://url2']) // This will disconnect the first socket
-
-```
-
-The default value is optional:
-
-
-```javascript
-
-import { forEach } from 'raincheck'
-
-const check = forEach().do(connectToSocket)
-
-check(['ws://url1', 'ws://url2']) // Opens 2 connections
-
-```
-
-The `connectToSocket()` can be any function. This function can return a cancel function, which in this case will close the socket:
-
-```javascript
-const connectToSocket = (url) => {
+const check = forEach().do((url) => {
   const socket = new WebSocket()
   socket.connect(url)
   return () => socket.close()
-}
+}) 
+
+check(['ws://url1', 'ws://url2']) // Opens 2 socket connections
+
+// ... later
+
+check(['ws://url2']) // This will disconnect the first socket
+
 ```
+
+
+The function passed into `do` starts a process and returns a cancel function, which in this case will open en close the socket.
+
 
 # Keys
 
@@ -66,14 +59,56 @@ When you pass in an array in `forEach` it will use the value as key. But if the 
 
 ```javascript
 
-forEach([{ url: '', id: 1 }])
+const check = forEach()
   .do(item => connectToSocket(item.url), {
     keyExtractor: item => `${item.id}+${item.url}`,
   })
 
+check([{ url: '', id: 1 }])
+
 ```
 
-# React
+# Examples
+
+## PouchDB
+
+Here an example to sync an array to PouchDb:
+
+```javascript
+
+const check = forEach(s => s.item, {
+  do: item => {
+    db.put(item)
+    return () => db.delete(item)
+  },
+  keyExtractor: item => item._id,
+  changed: (newValue, oldValue) => {
+    db.put(newValue)
+  }
+})
+  
+
+```
+
+## Reselect
+
+```javascript
+
+const selector = createSelector(
+  s => s.projects, 
+  s => s.login, 
+  (project, login) => (project && {project, login}), 
+)
+
+when(select).do(({project, login}) => {
+
+  // Called when project is truety & project & login is changed
+  
+})
+
+```
+
+## React
 
 
 
@@ -81,7 +116,10 @@ forEach([{ url: '', id: 1 }])
 
 class Compontent extends React.Component {
 
-  doConnectWhen = when(p => p.isLoggedIn && p.url).do(this.connect)
+  doConnectWhen = when(props => props.isLoggedIn && props.url)
+    .do((url) => {
+      //  do connect
+    })
 
   componentDidMount() {
     this.doConnectWhen(this.props)
@@ -89,9 +127,8 @@ class Compontent extends React.Component {
   componentDidUpdate() {
     this.doConnectWhen(this.props)
   }
-
-  connect(url) {
-    //  <-- do connect
+  componentDidUnmount() {
+    this.doConnectWhen(null)
   }
 
   render () {
@@ -102,7 +139,7 @@ class Compontent extends React.Component {
 ```
 
 
-# Redux
+## Redux
 
 `Raincheck` is particularly great when used with Redux.
 To connect to a store you use `createMiddleware()`, like so:
