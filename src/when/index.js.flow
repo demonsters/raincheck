@@ -1,0 +1,18 @@
+// @flow
+
+import type {DoWhen, ConstructFunction} from '../_libs/createConstruct'
+
+type ChainFunctions<O, I> = {
+  do: <P>(startFunc: ConstructFunction<O, P>) => DoWhen<O, I, P>
+}
+
+// No arguments
+declare export default function when<O> (): ChainFunctions<O, O>
+
+// Map value
+declare export default function when<O, I> (mapValue: (item: I) => O): ChainFunctions<O, I>
+
+// Settings
+declare export default function when<O, I, P> (settings: {
+  do: ConstructFunction<O, P>
+}): DoWhen<O, I>

@@ -1,8 +1,10 @@
 
-type DestructFunction = () => void
+type ConstructFunction = () => void
 
 export type ChainAPI = {
-  (destructFunction: (next: ChainAPI) => void | DestructFunction): void,
-  next: (destructFunction: (next: ChainAPI) => void | DestructFunction) => void,
-  branch: (destructFunction: (next: ChainAPI) => void | DestructFunction) => void,
+  (constructFunction: (next: ChainAPI) => void | ConstructFunction): void,
+  next: (constructFunction: (next: ChainAPI) => void | ConstructFunction) => void,
+  branch: (constructFunction: (next: ChainAPI) => void | ConstructFunction) => void,
+  fork: (constructFunction: (next: ChainAPI) => void | ConstructFunction) => void,
+  finish: () => void,
 }

@@ -47,6 +47,7 @@ const createNext = (parentFunc) => {
 
   let next = doNext(true)
   next.branch = doNext(false)
+  next.fork = doNext(false)
   next.complete = next
   next.resolve = next
   next.chain = next

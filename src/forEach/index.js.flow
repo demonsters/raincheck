@@ -1,0 +1,48 @@
+// @flow
+
+import type { DoWhen, ConstructFunction } from "../_libs/createConstruct";
+
+type KeyExtractor<S> = (item: S, index: number) => string | number;
+
+type ChangedFunction<S> = (
+  newValue: S,
+  oldValue: S,
+  key: string | number
+) => void;
+
+type DoOptions<S> = {
+  keyExtractor?: KeyExtractor<S>,
+  changed?: ChangedFunction<S>
+};
+
+type Options<S, P> = {
+  do: ConstructFunction<S, P>,
+  ...DoOptions<S>
+};
+
+type ChainFunctions<S, I> = {
+  do: <P>(
+    func: ConstructFunction<S, P>,
+    options?: DoOptions<S> | ChangedFunction<S>
+  ) => DoWhen<S, I, P>
+};
+
+
+// No arguments
+declare export default function forEach<S>(): ChainFunctions<S, Array<S>>;
+
+// Options
+declare export default function forEach<S, P>(
+  options: Options<S, P>
+): DoWhen<S, Array<S>, P>;
+
+// Map Selector
+declare export default function forEach<S, I>(
+  mapValue: (item: I) => Array<S>
+): ChainFunctions<S, I>;
+
+// Map & options
+declare export default function forEach<S, I, P>(
+  mapValue: (item: I) => Array<S>,
+  options: Options<S, P> | ConstructFunction<S, P>
+): DoWhen<S, I, P>;

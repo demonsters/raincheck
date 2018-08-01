@@ -1,4 +1,4 @@
-// flow
+// @flow
 
 import doForAll from '.'
 
@@ -8,20 +8,6 @@ describe('doForAll()', () => {
     const start = jest.fn();
     const end = jest.fn();
     const changed = jest.fn();
-
-    // TODO:
-
-    // doForAll(s => s, fnc)
-    // doForAll(undefined, fnc)
-    // or
-    // doForAll(s => s)(fnc)
-    // doForAll()(fnc)
-    // or
-    // doForAll(fnc).with(s => s)
-    // doForAll(fnc)
-    // or
-    // forAll(s => s).do(fnc)
-    // forAll().do(fnc)
 
     const tester = doForAll((...args) => {
       start(...args)
@@ -109,7 +95,7 @@ describe('doForAll()', () => {
 
     tester({obj1: obj2})
     tester({obj1: obj2})
-    expect(changed).toBeCalledWith(obj2, obj1)
+    expect(changed).toBeCalledWith(obj2, obj1, "obj1")
 
     tester({})
 
@@ -125,7 +111,7 @@ describe('doForAll()', () => {
       start(...args)
     })
 
-    tester(["test"])
+    tester({test: "test"})
     tester(null)
   })
 
@@ -156,7 +142,7 @@ describe('doForAll()', () => {
     tester({key: "string"})
     expect(firstStart).toBeCalled()
 
-    nextHandler()
+    if (nextHandler) nextHandler()
 
     expect(secondStart).toBeCalled()
 
@@ -167,6 +153,100 @@ describe('doForAll()', () => {
 
   })
 
+  describe('filter()', () => {
+
+    it('should filter out elements', () => {
+      const start = jest.fn();
+      type Obj = {
+        name: string,
+        filter: boolean
+      }
+      const tester = doForAll((item: Obj) => start(item))
+        .filter(s => s.filter);
+
+      const obj1 = {
+        name: "object 1",
+        filter: false
+      }
+      const obj2 = {
+        name: "object 2",
+        filter: true
+      }
+      tester({
+        key1: obj1,
+        key2: obj2
+      });
+      expect(start).toHaveBeenCalledTimes(1);
+    })
+
+    it('should filter out elements', () => {
+      const start = jest.fn();
+      const tester = doForAll(start)
+        .filter(s => s.filter)
+        .filter(s => s.filter2)
+
+      const obj1 = {
+        name: "object 1",
+        filter: false,
+        filter2: true,
+      }
+      const obj2 = {
+        name: "object 2",
+        filter: true,
+        filter2: true,
+      }
+      const obj3 = {
+        name: "object 3",
+        filter2: false,
+        filter: false,
+      }
+      const obj4 = {
+        name: "object 2",
+        filter: false,
+        filter2: true,
+      }
+      tester({
+        obj1,
+        obj2,
+        obj3,
+        obj4,
+      });
+      expect(start).toHaveBeenCalledTimes(1);
+    })
+
+
+    it('should update when changed', () => {
+      const start = jest.fn();
+      type Obj = {
+        name: string,
+        filter: boolean
+      }
+      const tester = doForAll((item: Obj) => start(item))
+        .filter(s => s.filter);
+
+      const obj1 = {
+        name: "object 1",
+        filter: false
+      }
+      const obj2 = {
+        name: "object 2",
+        filter: true
+      }
+      tester({
+        key1: obj1,
+        key2: obj2
+      });
+      tester({
+        key1: {
+          name: "object 1",
+          filter: true
+        },
+        key2: obj2
+      });
+      expect(start).toHaveBeenCalledTimes(2);
+    })
+
+  })
 
   describe("map()", () => {
     it("should called", () => {
@@ -207,8 +287,8 @@ describe('doForAll()', () => {
 
       tester(state)
 
-      expect(spy).toBeCalledWith(sendLogin, user1)
-      expect(spy).toBeCalledWith(sendLogin, user2)
+      expect(spy).toBeCalledWith(sendLogin, user1, expect.anything())
+      expect(spy).toBeCalledWith(sendLogin, user2, expect.anything())
 
     })
   })

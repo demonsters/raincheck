@@ -9,66 +9,137 @@ If you know react, you know that it’s pretty good in these types of situaties.
 
 This is where raincheck comes to the rescue. Inspired by react & redux.
 
-
 ```javascript
 
-import { doWhen } from 'raincheck'
+import { when } from 'raincheck'
 
-const connectToSocketWhen = doWhen(({isLoggedIn, url}, call) => {
-  if (isLoggedIn && !!url) {
-    call(connectToSocket, url, url) 
-  }
-})
-
-```
-
-This will trigger `connectToSocket()` when the following is called:
-
-```javascript
-
-connectToSocketWhen({
-  isLoggedIn: true,
-  url: 'ws://socketurl'
-})
-
-```
-
-And disconnect when:
-
-```javascript
-connectToSocketWhen({
-  isLoggedIn: false
-})
-```
-
-When you call `connectToSocketWhen` again with the same arguments it will not trigger `connectToSocket()` or disconnect. 
-To do this `raincheck` works with key's, the same way react does. It's the third argument of the `call` function. 
-When the first argument is a string instead of an array it will be used as key and is passed in as argument to `connectToSocket()`, 
-so the example above could be simplified to:
-
-```javascript
-
-import { doWhen } from 'raincheck'
-
-const connectToSocketWhen = doWhen(({isLoggedIn, url}, call) => {
-  if (isLoggedIn && !!url) {
-    call(connectToSocket, url) 
-  }
-})
-
-```
-
-The `connectToSocket()` can be any function. This function can return a cancel function, which in this case will close the socket:
-
-```javascript
-const connectToSocket = (url) => {
+const check = when().do((url) => {
   const socket = new WebSocket()
   socket.connect(url)
   return () => socket.close()
-}
+}) 
+
+check("ws://url1") // Will open the connection
+
+// ... later
+
+check(false) // this will disconnect the socket, (can be false, null or undefined)
+
 ```
 
-# Redux
+or when there is more than one
+
+
+```javascript
+
+import { forEach } from 'raincheck'
+
+const check = forEach().do((url) => {
+  const socket = new WebSocket()
+  socket.connect(url)
+  return () => socket.close()
+}) 
+
+check(['ws://url1', 'ws://url2']) // Opens 2 socket connections
+
+// ... later
+
+check(['ws://url2']) // This will disconnect the first socket
+
+```
+
+
+The function passed into `do` starts a process and returns a cancel function, which in this case will open en close the socket.
+
+
+# Keys
+
+To identify an object it uses keys, just like react. 
+When you pass in an array in `forEach` it will use the value as key. But if the objects are not strings you should use the keyExtractor:
+
+```javascript
+
+const check = forEach()
+  .do(item => connectToSocket(item.url), {
+    keyExtractor: item => `${item.id}+${item.url}`,
+  })
+
+check([{ url: '', id: 1 }])
+
+```
+
+# Examples
+
+## PouchDB
+
+Here an example to sync an array to PouchDb:
+
+```javascript
+
+const check = forEach(s => s.item, {
+  do: item => {
+    db.put(item)
+    return () => db.delete(item)
+  },
+  keyExtractor: item => item._id,
+  changed: (newValue, oldValue) => {
+    db.put(newValue)
+  }
+})
+  
+
+```
+
+## Reselect
+
+```javascript
+
+const selector = createSelector(
+  s => s.projects, 
+  s => s.login, 
+  (project, login) => (project && {project, login}), 
+)
+
+when(select).do(({project, login}) => {
+
+  // Called when project is truety & project & login is changed
+  
+})
+
+```
+
+## React
+
+
+
+```javascript
+
+class Compontent extends React.Component {
+
+  doConnectWhen = when(props => props.isLoggedIn && props.url)
+    .do((url) => {
+      //  do connect
+    })
+
+  componentDidMount() {
+    this.doConnectWhen(this.props)
+  }
+  componentDidUpdate() {
+    this.doConnectWhen(this.props)
+  }
+  componentDidUnmount() {
+    this.doConnectWhen(null)
+  }
+
+  render () {
+    // ..
+  }
+}
+
+```
+
+
+## Redux
 
 `Raincheck` is particularly great when used with Redux.
 To connect to a store you use `createMiddleware()`, like so:
@@ -76,35 +147,27 @@ To connect to a store you use `createMiddleware()`, like so:
 ```javascript
 
 createMiddleware(
-  doWhen(({isLoggedIn, url}, call) => {
-    if (isLoggedIn && !!url) {
-      call(connectToSocket, url) 
-    }
-  })
+  when(state => state.login.isLoggedIn && state.socket.url)
+    .do(connectToSocket)
 )
 
 ```
 
-Each time the state changes the function passed into `doWhen` will be called. The state will be passed in as the first argument of this function. It does a shallow equal to prevent calls when the state didn't changed.
-To narrow down the state, to prevent the function from being called when unrelated state changed, you can use the `map()` function, 
-it works a bit like the first argument (`mapStateToProps`) in the `connect()` from `react-redux`:
+As you can see you can pass in an function instead of an default value.
+When you pass in a function it uses it to map the state to an value.
+See here another example with `forEach`:
 
 ```javascript
 
 createMiddleware(
-  doWhen(({isLoggedIn, url}, call) => {
-    if (isLoggedIn && !!url) {
-      call(connectToSocket, url) 
-    }
-  }).map(state => {
-    return {
-      isLoggedIn: state.login.isLoggedIn,
-      url: state.socket.url
-    }
-  })
+  forEach((state) => state.sockets)
+    .do(item => connectToSocket(item.url), {
+      keyExtractor: item => `${item.id}+${item.url}`,
+    })
 )
 
 ```
+
 
 # Unit testing
 
@@ -114,20 +177,16 @@ With the `mock()` function you can easily test your setup:
 
 const connectToSocket = () => {}
 
-const connectToSocketWhen = doWhen(
-  ({isLoggedIn, url}, call) => {
-    if (isLoggedIn && !!url) {
-      call(connectToSocket, url)
-    }
-  }
-)
+const doConnectToSocketWhen = when(
+  ({isLoggedIn, url}) => isLoggedIn && !!url
+).do(connectToSocket)
 
 it('should connect to socket', () => {
 
   const listener = jest.fn()
   const destruct = jest.fn()
 
-  let tester = connectToSocketWhen.mock(listener, destruct) // <--- Here's the magic :)
+  let tester = doConnectToSocketWhen.mock(listener, destruct) // <--- Here's the magic :)
 
   const url = "dfgh"
   tester({
@@ -139,66 +198,19 @@ it('should connect to socket', () => {
 })
 ```
 
-# Shorthand functions
 
-In some situations its a bit divious to write a function in doWhen, so some shorthand functions are profided. 
-All shorthand function have the `map` and `mock` functionality and can be used in `createMiddleware` or without it by calling it directly (like in the first example).
+# Deprecated
 
-## doWhenTrue
+`doForAll`, `doForAllKeys`, `doWhenTrue` & `doWhenChanged` are deprecated and will be removed in 1.0. 
 
-```javascript
-doWhenTrue(connectToSocket)
-```
+## Replacements
 
-Is comparable to:
+`doForAll` will be replaced by `forEachEntity`
 
-```javascript
-doWhen(state => {
-  if (state) call(connectToSocket)
-})
-```
+`doForAllKeys` will be replaced by `forEach`, it doesn't have to be a string anymore the key is kan now be extract with `keyExtractor`
 
-## doWhenChanged
-doWhenChanged isn't really comparable to anything we can do with doWhen.
-The example below will reconnect to the socket when the url has been changed:
+Both `doWhenTrue` & `doWhenChanged` will be replace by `when`.
 
-```javascript
-const connectToSocket = (newURL, oldURL) => {
-  if (!newURL) return
-  const socket = new WebSocket()
-  socket.connect(newURL)
-  return () => socket.close()
-}
-doWhenChanged(connectToSocket)
-```
-
-## doForAll
-```javascript
-doForAll(connectToSocket)
-```
-
-Is comparable to:
-
-```javascript
-doWhen(state => {
-  Object.keys(state).forEach(key => {
-    call(connectToSocket, state[key], key)
-  })
-})
-```
-
-## doForAllKeys
-```javascript
-doForAllKeys(connectToSocket)
-```
-
-Is comparable to:
-
-```javascript
-doWhen(state => {
-  state.forEach(key => call(connectToSocket, key))
-})
-```
 
 # Chaining API
 
@@ -208,5 +220,67 @@ For this situation you can use the chaining API.
 
 The last argument of the construct function contains the functions of the chaining API. This makes it possible to 'register' a new destruct function and opt-out of the current destruct function by using `next()`. If the current action isn’t finished yet you can use `branch()`.
 
+See an example of loading an image after every second,
+it will cancel whatever process is active right now:
+
+```javascript
 
 
+const setTimer = ({next, branch}) => {
+  let timer = setTimeout(() => next(getImage), 1000)
+  return () => clearTimeout(timer)
+}
+
+const loadImage = (result: string) => ({finish}) => {
+
+  // Load image for dimensions
+  let img = new Image()
+  img.onload = () => {
+    finish()
+    // next(setTimer)
+  }
+  img.src = result
+
+  return () => img.src = ""
+}
+
+const readFile = (response) => ({next}) => {
+
+  let reader = new FileReader()
+  reader.onload = (e) => {
+    next(loadImage(reader.result))
+  }
+  reader.readAsDataURL(response)
+
+  return () => reader.abort()
+}
+
+const getImage = (url, {next}) => {
+
+  if (!body || !url) return
+
+  let xhrreq = new XMLHttpRequest()
+  xhrreq.open('POST', url)
+  xhrreq.responseType = "blob";
+
+  xhrreq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  xhrreq.onload = (ev) => {
+    if (xhrreq.status === 200) {
+      // Already start a timer
+      branch(setTimer)
+
+      // Start next 
+      next(readFile(xhrreq.response))
+    }
+  }
+  xhrreq.send(body)
+
+  return () => xhrreq.abort()
+}
+
+createMiddleware(
+  when(state => state.image.isActive && state.image.url)
+    .do(getImage)
+)
+
+```

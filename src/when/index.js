@@ -1,19 +1,20 @@
 import createNext from './../_libs/createChainAPI';
 import createConstruct from '../_libs/createConstruct'
 
-
 import doWhen from '../doWhen'
 
-
-/**
- * @deprecated use 'when' instead
- */
-const doWhenTrue = (defaultValue, options) => {
-
-  console.warn("doWhenTrue is deprecated use 'when' instead")
+const when = (defaultValue, options) => {
 
   const create = (constructFunc, defaultValue) => {
-  
+    
+    let selector
+    if (typeof defaultValue === "function") {
+      selector = defaultValue
+      defaultValue = undefined
+    } else {
+      selector = s => s
+    }
+
     const c = createConstruct((selector, constructMock, destructMock) => {
   
       let oldState = undefined
@@ -23,20 +24,20 @@ const doWhenTrue = (defaultValue, options) => {
         let newState = selector(state)
         if (newState !== oldState) {
           if (destruct) destruct()
-          if (newState) {
+          if (newState !== undefined && newState !== null && newState !== false) {
             const tmp = oldState
             oldState = newState
             if (constructMock) {
-              constructMock(constructFunc) // need key?
+              constructMock(constructFunc, newState) // need key?
             } else {
-              destruct = createNext(next => constructFunc(next, ...args))
+              destruct = createNext(next => constructFunc(newState, next, ...args))
             }
           } else {
             oldState = false
           }
         }
       }
-    })
+    }).map(selector)
     
     if (defaultValue !== undefined) {
       c(defaultValue)
@@ -44,9 +45,9 @@ const doWhenTrue = (defaultValue, options) => {
     return c
   }
 
-  if (typeof defaultValue === "function") {
-    return create(defaultValue, undefined)
-  }
+  // if (typeof defaultValue === "function") {
+  //   return create(defaultValue, undefined)
+  // }
 
   if (options) {
     if (typeof options === "function") {
@@ -56,5 +57,10 @@ const doWhenTrue = (defaultValue, options) => {
       return create(options.do, defaultValue)
     }
   }
+
+  return {
+    do: (constructFunc) => create(constructFunc, defaultValue)
+  }
+
 }
-export default doWhenTrue
+export default when

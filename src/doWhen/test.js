@@ -279,7 +279,7 @@ describe('doWhen', () => {
 
       const obj1 = "object 1"
       tester({ value: obj1 });
-      expect(start).toBeCalledWith(obj1, expect.anything());
+      expect(start).toBeCalledWith(obj1, expect.anything(), expect.anything());
     })
 
     it('should work when value is not an object', () => {
@@ -304,8 +304,33 @@ describe('doWhen', () => {
 
       const obj1 = "object 1"
       tester({ value: obj1 });
-      expect(start).toBeCalledWith(obj1, expect.anything());
+      expect(start).toBeCalledWith(obj1, expect.anything(), expect.anything());
     });
   });
+
+
+  it('should not overflow when called recursive', () => {
+
+    let i = 0
+
+    const doFunc = () => {
+      i++
+      if (i > 1) {
+        throw new Error('Recursive error')
+      }
+      doCheck(true)
+    }
+
+    const doCheck = doWhen((value: boolean, call) => {
+      if (value) {
+        call(doFunc)
+      }
+    })
+
+    doCheck(true)
+
+    expect(i).toBe(1)
+
+  })
 
 })

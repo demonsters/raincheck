@@ -4,7 +4,7 @@ import doWhenTrue from ".";
 
 describe("doWhenTrue()", () => {
 
-  it("should work with true & false", () => {
+  it("should work with true & null", () => {
 
     const start = jest.fn();
     const end = jest.fn();
@@ -19,11 +19,14 @@ describe("doWhenTrue()", () => {
     tester(true);
 
     tester(false);
-    expect(start).toBeCalled();
+    expect(end).toBeCalled();
     tester(false);
 
-    expect(start).toHaveBeenCalledTimes(1);
-    expect(start).toHaveBeenCalledTimes(1);
+    tester(true);
+    expect(start).toBeCalled();
+
+    expect(start).toHaveBeenCalledTimes(2);
+    expect(end).toHaveBeenCalledTimes(1);
   });
 
   it("should cancel next", () => {
@@ -153,7 +156,7 @@ describe("doWhenTrue()", () => {
       const tester = doWhenTrue(changed).mock(spy)
 
       tester(true)
-      expect(spy).toBeCalledWith(changed)
+      expect(spy).toBeCalled()
 
     })
   })

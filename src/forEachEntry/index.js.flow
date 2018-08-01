@@ -1,0 +1,26 @@
+// @flow
+
+import type {DoWhen, ConstructFunction} from '../_libs/createConstruct'
+
+type ChangedFunction<O, P> = (newValue: O, oldValue?: O, ...args: P) => void
+
+type Value<O> = { [key: string]: O } | null | false | void
+
+type ChainFunctions<O, I> = {
+  do: <P>(startFunc: ConstructFunction<O, P>, changedFunc?: ChangedFunction<O, P>) => DoWhen<O, I, P>
+}
+
+// No arguments
+declare export default function forEachEntry<O> (): ChainFunctions<O, Value<O>>
+
+// Map 
+declare export default function forEachEntry<O, I> (mapValue: (item: I) => Value<O>): ChainFunctions<O, I>
+
+// Map & change function
+declare export default function forEachEntry<O, I, P> (mapValue:  (item: I) => Value<O>, changedFunc: ChangedFunction<O, P>): DoWhen<O, I, P>
+
+// Settings
+declare export default function forEachEntry<O, P> (settings: {
+  do: ConstructFunction<O, P>, 
+  changed?: ChangedFunction<O, P>, 
+}): DoWhen<O, Value<O>, P>
