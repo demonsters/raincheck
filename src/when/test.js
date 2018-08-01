@@ -191,7 +191,7 @@ describe('when()', () => {
     })
 
     const obj1 = "object 1"
-    tester({ value: obj1 });
+    tester(obj1);
     expect(start).toBeCalledWith(obj1, expect.anything());
   })
 
