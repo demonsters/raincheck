@@ -25,8 +25,21 @@ type ChainFunctions<S, I> = {
 };
 
 
-export default function forEach<S>(defaultValue: Array<S>, options: Options<S> | ConstructFunction<S>): DoWhen<S, Array<S>>;
-export default function forEach<S, I>(mapValue: (item: I) => Array<S>, options: Options<S> | ConstructFunction<S>): DoWhen<S, I>;
+// No arguments
+export default function forEach<S>(): ChainFunctions<S, Array<S>>;
 
-export default function forEach<S>(defaultValue?: Array<S>): ChainFunctions<S, Array<S>>;
-export default function forEach<S, I>(mapValue: (item: I) => Array<S>): ChainFunctions<S, I>;
+// Options
+export default function forEach<S>(
+  options: Options<S>
+): DoWhen<S, Array<S>>;
+
+// Map Selector
+export default function forEach<S, I>(
+  mapValue: (item: I) => Array<S>
+): ChainFunctions<S, I>;
+
+// Map & options
+export default function forEach<S, I>(
+  mapValue: (item: I) => Array<S>,
+  options: Options<S> | ConstructFunction<S>
+): DoWhen<S, I>;

@@ -6,34 +6,29 @@ type Item = {
   name: string
 }
 
-const check1 = () => {
+const checkWithoutArguments = () => {
   const recheck = forEachEntry().do((item: Item) => console.log(item.name))
   recheck({item1: {name: "s"}})
 }
 
-const check2 = () => {
-  const recheck = forEachEntry({item1: {name: "s"}})
+const checkWithMapValue = () => {
+  const value = {item1: {name: "s"}}
+  const recheck = forEachEntry((s: typeof value) => s)
     .do((item: Item) => console.log(item.name))
 
   recheck({item1: {name: "s"}})
-}
 
-const check3 = () => {
-  const recheck = forEachEntry({item1: {name: "s"}})
-    .do((item: Item) => console.log(item.name))
-
-  recheck({item1: {name: "s"}})
-}
-
-const check4 = () => {
-  const recheck = forEachEntry({item1: {name: "s"}})
-    .do((item: Item) => console.log(item.name))
-  
   // $ExpectError: should fail
   recheck({item1: "s"})
 }
 
-const check5 = () => {
+
+
+const checkWithFilter = () => {
+
+  type State = {
+    settings: {[key: string]: VideochatSettings}
+  }
 
   type VideochatSettings = {
     name: string
@@ -45,12 +40,16 @@ const check5 = () => {
     }
   }
 
-  const connect = () => {}
+  const state: State = {
+    settings
+  }
 
-  const doRemote = forEachEntry((): {[key: string]: VideochatSettings} => settings).do(connect)
+  const connect = (s: VideochatSettings) => {}
+
+  const doRemote = forEachEntry((s: State): {[key: string]: VideochatSettings} => s.settings).do(connect)
     .filter((item: VideochatSettings) => !!item.name)
 
-    doRemote()
+  doRemote(state)
 }
 
 const check6 = () => {
@@ -72,4 +71,28 @@ const check6 = () => {
       key: obj1 
     }
   });
+}
+
+
+const checkWithChangedFunction = () => {
+
+  type VideochatSettings = {
+    name: string
+  }
+
+  const modConfStatusActor = forEachEntry().do((settings: VideochatSettings) => {
+    
+  },
+  (settings: VideochatSettings, oldSettings?: VideochatSettings) => {
+    
+  })
+
+  const settings = {
+    key: {
+      name: ""
+    }
+  }
+
+  modConfStatusActor(settings)
+
 }

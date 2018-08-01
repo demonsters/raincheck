@@ -4,9 +4,14 @@ import doWhen from '../doWhen'
 
 const emptyObject = {}
 
-export default function forEach(defaultValue, options) {
+export default function forEach(selector, options) {
 
-  const create = (constructFunc, defaultValue, changed, keyExtractor = s => s) => {
+  if (typeof selector !== "function") {
+    options = selector
+    selector = s => s
+  }
+
+  const create = (constructFunc, changed, keyExtractor = s => s) => {
 
     let cachedObjects
     let newObjects
@@ -19,13 +24,6 @@ export default function forEach(defaultValue, options) {
       }
     } : () => {}
 
-    let selector
-    if (typeof defaultValue === "function") {
-      selector = defaultValue
-      defaultValue = undefined
-    } else {
-      selector = s => s
-    }
 
     const c = doWhen((state, call, filterFunc) => {
       if (state) {
@@ -43,9 +41,6 @@ export default function forEach(defaultValue, options) {
       }
     }).map(selector)
     
-    if (defaultValue !== undefined) {
-      c(defaultValue)
-    }
     return c
   }
 
@@ -55,19 +50,20 @@ export default function forEach(defaultValue, options) {
 
   if (options) {
     if (typeof options === "function") {
-      return create(options, defaultValue)
+      return create(options)
     }
     if (options.do) {
-      return create(options.do, defaultValue, options.changed, options.keyExtractor)
+      return create(options.do, options.changed, options.keyExtractor)
     }
   }
 
   return {
-    do: (constructFunc, options) => {
-      if (!options) {
-        return create(constructFunc, defaultValue)
+    do: (constructFunc, o) => {
+      o = {
+        ...options,
+        ...o,
       }
-      return create(constructFunc, defaultValue, options.changed, options.keyExtractor)
+      return create(constructFunc, o.changed, o.keyExtractor)
     }
   }
 

@@ -6,7 +6,9 @@ describe('forEachEntry()', () => {
 
   it('should work with do function chaining', () => {
     const start = jest.fn();
-    forEachEntry({key: 'element1'}).do(start)({key: 'element'})
+    const t = forEachEntry().do(start)
+    t({key: 'element1'})
+    t({key: 'element'})
     expect(start).toHaveBeenCalledTimes(1)
   })
   

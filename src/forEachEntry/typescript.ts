@@ -6,29 +6,18 @@ type Item = {
   name: string
 }
 
-const check1 = () => {
+const checkWithoutArguments = () => {
   const recheck = forEachEntry().do((item: Item) => console.log(item.name))
   recheck({item1: {name: "s"}})
 }
 
-const check2 = () => {
-  const recheck = forEachEntry({item1: {name: "s"}})
+const checkWithMapValue = () => {
+  const value = {item1: {name: "s"}}
+  const recheck = forEachEntry((s: typeof value) => s)
     .do((item: Item) => console.log(item.name))
 
-  recheck({item1: {name: "s"}})
-}
+  recheck(value)
 
-const check3 = () => {
-  const recheck = forEachEntry({item1: {name: "s"}})
-    .do((item: Item) => console.log(item.name))
-
-  recheck({item1: {name: "s"}})
-}
-
-const check4 = () => {
-  const recheck = forEachEntry({item1: {name: "s"}})
-    .do((item: Item) => console.log(item.name))
-  
   // @ts-ignore: should fail!
   recheck({item1: "s"})
 }

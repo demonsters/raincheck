@@ -6,36 +6,28 @@ type Item = {
   name: string
 }
 
-const check1 = () => {
+const checkNoArgument = () => {
   const recheck = forEach().do((item: Item) => {
     console.log(item)
   })
+
+  recheck([{name: "adsfsd"}])
+
   // $ExpectError
   recheck("adsfsd")
-  // recheck([{name: "asdfas"}])
-}
 
-const check2 = () => {
-  const recheck = forEach().do((item: Item) => {
-    console.log(item)
-  })
   // $ExpectError
   recheck(["adsfsd"])
 }
 
-const check3 = () => {
-  const recheck = forEach().do((item: Item) => {
-    console.log(item)
-  })
-  recheck([{name: "adsfsd"}])
-}
-
-const check6 = () => {
-  const recheck = forEach([], {
-    do: (item: Item) => {
+const checkMapFunction = () => {
+  const recheck = forEach((s: string) => [{name: s}])
+    .do((item: Item) => {
       console.log(item)
-    }
-  })
-  // $ExpectError
+    })
+    
   recheck("adsfsd")
+
+  // $ExpectError
+  recheck(["adsfsd"])
 }

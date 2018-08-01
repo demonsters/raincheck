@@ -2,10 +2,17 @@
 
 import type {DoWhen, ConstructFunction} from '../_libs/createConstruct'
 
-type Value<S> = { [key: any]: any } | null | false | void
-
-type ChainFunctions<S, I> = {
-  do: <P>(startFunc: ConstructFunction<S, P>) => DoWhen<S, I, P>
+type ChainFunctions<O, I> = {
+  do: <P>(startFunc: ConstructFunction<O, P>) => DoWhen<O, I, P>
 }
 
-declare export default function when<S, I, P> (defaulValue: S | (item: I) => S): ChainFunctions<S, P>
+// No arguments
+declare export default function when<O> (): ChainFunctions<O, O>
+
+// Map value
+declare export default function when<O, I> (mapValue: (item: I) => O): ChainFunctions<O, I>
+
+// Settings
+declare export default function when<O, I, P> (settings: {
+  do: ConstructFunction<O, P>
+}): DoWhen<O, I>

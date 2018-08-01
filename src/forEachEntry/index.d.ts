@@ -20,10 +20,17 @@ type ChainFunctions<S, I> = {
 }
 
 
-// declare export default function forEachEntry<S, P> (startFunc: ConstructFunction<S, P>, changedFunc?: ChangedFunction<S, P>): DoWhen<S, Value<S>, P>
-export default function forEachEntry<S> (defaultValue: Value<S> | void, changedFunc: ChangedFunction<S>): DoWhen<S, Value<S>>
-export default function forEachEntry<S, I> (defaultValue:  (item: I) => Value<S> | void, changedFunc: ChangedFunction<S>): DoWhen<S, Value<S>>
+// No arguments
+export default function forEachEntry<O> (): ChainFunctions<O, Value<O>>
 
-// Can't distinguish a object from an function with flow, so this will not give 
-export default function forEachEntry<S, I> (defaultValue?: Value<S>): ChainFunctions<S, Value<S>>
-export default function forEachEntry<S, I> (defaultValue?: (item: I) => Value<S>): ChainFunctions<S, I>
+// Map 
+export default function forEachEntry<O, I> (mapValue: (item: I) => Value<O>): ChainFunctions<O, I>
+
+// Map & change function
+export default function forEachEntry<O, I, P> (mapValue:  (item: I) => Value<O>, changedFunc: ChangedFunction<O>): DoWhen<O, I>
+
+// Settings
+export default function forEachEntry<O, P> (settings: {
+  do: ConstructFunction<O>, 
+  changed?: ChangedFunction<O>, 
+}): DoWhen<O, Value<O>>

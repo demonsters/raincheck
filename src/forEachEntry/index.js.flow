@@ -10,11 +10,17 @@ type ChainFunctions<O, I> = {
   do: <P>(startFunc: ConstructFunction<O, P>, changedFunc?: ChangedFunction<O, P>) => DoWhen<O, I, P>
 }
 
+// No arguments
+declare export default function forEachEntry<O> (): ChainFunctions<O, Value<O>>
 
-declare export default function forEachEntry<O, I, P> (mapValue:  (item: I) => Value<O>, changedFunc: ChangedFunction<O, P>): DoWhen<O, I, P>
-declare export default function forEachEntry<O, I, P> (defaultValue?: Value<I>, changedFunc: ChangedFunction<O, P>): DoWhen<O, Value<I>, P>
-
-// Can't distinguish a object from an function with flow, so this will not give 
+// Map 
 declare export default function forEachEntry<O, I> (mapValue: (item: I) => Value<O>): ChainFunctions<O, I>
-declare export default function forEachEntry<O, I> (defaultValue?: Value<I>): ChainFunctions<O, Value<I>>
- 
+
+// Map & change function
+declare export default function forEachEntry<O, I, P> (mapValue:  (item: I) => Value<O>, changedFunc: ChangedFunction<O, P>): DoWhen<O, I, P>
+
+// Settings
+declare export default function forEachEntry<O, P> (settings: {
+  do: ConstructFunction<O, P>, 
+  changed?: ChangedFunction<O, P>, 
+}): DoWhen<O, Value<O>, P>

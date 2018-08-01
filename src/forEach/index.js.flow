@@ -20,20 +20,6 @@ type Options<S, P> = {
   ...DoOptions<S>
 };
 
-// type DefaultValue<S, I = Array<S>> = I | ((item: I) => Array<S>);
-
-// declare export default function forEach<S, P> (startFunc: ConstructFunction<S, P> ): DoWhen<S, Array<S>, P>
-
-declare export default function forEach<S, P>(
-  defaultValue: Array<S>,
-  options: Options<S, P> | ConstructFunction<S, P>
-): DoWhen<S, Array<S>, P>;
-
-declare export default function forEach<S, P, I>(
-  mapValue: (item: I) => Array<S>,
-  options: Options<S, P> | ConstructFunction<S, P>
-): DoWhen<S, I, P>;
-
 type ChainFunctions<S, I> = {
   do: <P>(
     func: ConstructFunction<S, P>,
@@ -41,10 +27,22 @@ type ChainFunctions<S, I> = {
   ) => DoWhen<S, I, P>
 };
 
-declare export default function forEach<S>(
-  defaultValue?: Array<S>
-): ChainFunctions<S, Array<S>>;
 
+// No arguments
+declare export default function forEach<S>(): ChainFunctions<S, Array<S>>;
+
+// Options
+declare export default function forEach<S, P>(
+  options: Options<S, P>
+): DoWhen<S, Array<S>, P>;
+
+// Map Selector
 declare export default function forEach<S, I>(
   mapValue: (item: I) => Array<S>
 ): ChainFunctions<S, I>;
+
+// Map & options
+declare export default function forEach<S, I, P>(
+  mapValue: (item: I) => Array<S>,
+  options: Options<S, P> | ConstructFunction<S, P>
+): DoWhen<S, I, P>;

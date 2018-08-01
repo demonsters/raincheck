@@ -45,18 +45,6 @@ const forEachEntry = (defaultValue, options) => {
     return c
   }
 
-  // if (typeof defaultValue === "function") {
-  //   if (options && typeof options === "function") {
-  //     return forEachEntry(undefined, {
-  //       changed: options,
-  //       do: defaultValue,
-  //     })
-  //   }
-  //   return forEachEntry(undefined, {
-  //     ...options,
-  //     do: defaultValue,
-  //   })
-  // }
 
   if (options) {
     if (typeof options === "function") {
@@ -68,7 +56,7 @@ const forEachEntry = (defaultValue, options) => {
   }
 
   return {
-    do: (constructFunc, changed) => create(constructFunc, defaultValue, changed)
+    do: (constructFunc, changed) => create(constructFunc, defaultValue, changed || (options ? options.changed : undefined))
   }
 
 }

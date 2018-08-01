@@ -7,15 +7,15 @@ describe('forEach()', () => {
 
   it('should work when given constructor as option do', () => {
     const start = jest.fn();
-    forEach(['element'], {
+    forEach({
       do: start
-    })
+    })(['element'])
     expect(start).toHaveBeenCalledTimes(1)
   })
 
   it('should work when given constructor as function option', () => {
     const start = jest.fn();
-    forEach(['element'], () => start())
+    forEach((s: Array<string>) => s, () => start())(['element'])
 
     expect(start).toHaveBeenCalledTimes(1)
   })
@@ -26,14 +26,45 @@ describe('forEach()', () => {
     expect(start).toHaveBeenCalledTimes(1)
   })
   
-  it('should work with key extractor', () => {
+  // it('should work with key extractor', () => {
+  //   const start = jest.fn();
+  //   const element1 = {name: 'element', id: 1}
+  //   const element2 = {name: 'element', id: 2}
+  //   const doIt = forEach([element1], {
+  //     do: start,
+  //     keyExtractor: s => s.id
+  //   })
+  //   doIt([element1, element2])
+  //   expect(start).toBeCalledWith(element1, expect.anything())
+  //   expect(start).toBeCalledWith(element2, expect.anything())
+  // })
+  
+  it('should work with key extractor & do function', () => {
     const start = jest.fn();
-    const element = {name: 'element', id: 1}
-    forEach([element], {
+    const element1 = {name: 'element', id: 1}
+    const element2 = {name: 'element', id: 2}
+    const doIt = forEach((e: Array<{name: string, id: number}>) => e, {
+      keyExtractor: s => s.id,
+      do: start
+    })
+    doIt([element1])
+    doIt([element1, element2])
+    expect(start).toBeCalledWith(element1, expect.anything())
+    expect(start).toBeCalledWith(element2, expect.anything())
+  })  
+  
+  it('should work only options', () => {
+    const start = jest.fn();
+    const element1 = {name: 'element', id: 1}
+    const element2 = {name: 'element', id: 2}
+    const doIt = forEach({
       do: start,
       keyExtractor: s => s.id
     })
-    expect(start).toBeCalledWith(element, expect.anything())
+    doIt([element1])
+    doIt([element1, element2])
+    expect(start).toBeCalledWith(element1, expect.anything())
+    expect(start).toBeCalledWith(element2, expect.anything())
   })
 
   it('should work when the first element is an selector', () => {
@@ -70,11 +101,13 @@ describe('forEach()', () => {
     const changed = jest.fn();
     const obj1 = {name: "obj1", id: 1}
     const obj2 = {name: "obj2", id: 1}
-    const tester = forEach([obj1], {
-      do: start,
+    const tester = forEach({
+      do: (item: Array<typeof obj1>) => start(item),
       changed,
       keyExtractor: s => s.id
     })
+
+    tester([obj1])
 
     // Start obj1
     tester([obj2])
@@ -146,33 +179,33 @@ describe('forEach()', () => {
       const start = jest.fn();
       type Obj = {
         name: string,
-        filter: boolean,
+        filter1: boolean,
         filter2: boolean,
       }
       const tester = forEach().do(start, {
         keyExtractor: (item: Obj) => item.name
       })
-        .filter(s => s.filter)
+        .filter(s => s.filter1)
         .filter(s => s.filter2)
 
       const obj1 = {
         name: "object 1",
-        filter: false,
+        filter1: false,
         filter2: true,
       }
       const obj2 = {
         name: "object 2",
-        filter: true,
+        filter1: true,
         filter2: true,
       }
       const obj3 = {
         name: "object 3",
         filter2: false,
-        filter: false,
+        filter1: false,
       }
       const obj4 = {
         name: "object 4",
-        filter: false,
+        filter1: false,
         filter2: true,
       }
       tester([
