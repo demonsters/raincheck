@@ -28,7 +28,7 @@ describe('forEachEntry()', () => {
     expect(changed).toHaveBeenCalledTimes(1)
   })
 
-  it('should work when selector has given as defaultValue', () => {
+  it('should work when selector has given', () => {
     const start = jest.fn();
     type ValueState = {
       [key: string]: string
@@ -46,6 +46,27 @@ describe('forEachEntry()', () => {
       });
     expect(start).toBeCalledWith(obj1, expect.anything());
   })
+
+
+  it('should call changed when using do options', () => {
+    const start = jest.fn();
+    const changed = jest.fn();
+    // type State = {
+    //   name: string,
+    //   id: number
+    // }
+    const object1 = {name: 'object1', id: 1}
+    const object2 = {name: 'object2', id: 1}
+    const recheck = forEachEntry({
+      do: start,
+      changed
+    })
+    recheck({key: object1})
+    recheck({key: object2})
+    expect(start).toHaveBeenCalledTimes(1)
+    expect(changed).toHaveBeenCalledTimes(1)
+  })
+
 
 
 })

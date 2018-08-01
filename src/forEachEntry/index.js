@@ -2,17 +2,14 @@ import createNext from '../_libs/createChainAPI';
 import createConstruct from '../_libs/createConstruct'
 import doWhen from '../doWhen'
 
-const forEachEntry = (defaultValue, options) => {
+const forEachEntry = (selector, options) => {
 
-  const create = (constructFunc, defaultValue, changed) => {
+  if (typeof selector !== "function") {
+    options = selector
+    selector = s => s
+  }
 
-    let selector
-    if (typeof defaultValue === "function") {
-      selector = defaultValue
-      defaultValue = undefined
-    } else {
-      selector = s => s
-    }
+  const create = (constructFunc, changed) => {
 
     let cachedObjects
 
@@ -39,24 +36,21 @@ const forEachEntry = (defaultValue, options) => {
 
     }).map(selector)
     
-    if (defaultValue !== undefined) {
-      c(defaultValue)
-    }
     return c
   }
 
 
   if (options) {
     if (typeof options === "function") {
-      return create(options, defaultValue)
+      return create(options)
     }
     if (options.do) {
-      return create(options.do, defaultValue, options.changed)
+      return create(options.do, options.changed)
     }
   }
 
   return {
-    do: (constructFunc, changed) => create(constructFunc, defaultValue, changed || (options ? options.changed : undefined))
+    do: (constructFunc, changed) => create(constructFunc, changed || (options ? options.changed : undefined))
   }
 
 }
