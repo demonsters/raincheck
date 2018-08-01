@@ -183,6 +183,17 @@ describe('when()', () => {
     expect(start).toBeCalledWith(obj1, expect.anything());
   })
 
+  it('should work with options', () => {
+    const start = jest.fn();
+
+    const tester = when({
+      do: start
+    })
+
+    const obj1 = "object 1"
+    tester({ value: obj1 });
+    expect(start).toBeCalledWith(obj1, expect.anything());
+  })
 
 })
 
