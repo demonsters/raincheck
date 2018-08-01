@@ -1,5 +1,6 @@
 
-/lib/**/__tests__/**/*.flow
+
+lib/
 
 ### OSX template
 .DS_Store
