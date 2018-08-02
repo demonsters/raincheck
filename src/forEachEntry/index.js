@@ -13,7 +13,7 @@ const forEachEntry = (selector, options) => {
 
     let cachedObjects
 
-    const c = doWhen((state, call, filterFunc) => {
+    const c = doWhen((state, call, filterFunc, ...args) => {
       if (state) {
 
         const keys = Object.keys(state)
@@ -22,10 +22,10 @@ const forEachEntry = (selector, options) => {
           const key = keys[i]
           const object = state[key]
           if (filterFunc(object)) {
-            call(constructFunc, object, key)
+            call(constructFunc, object, key, ...args)
             
             if (changed && cachedObjects && cachedObjects[key] !== object) {
-              changed(object, cachedObjects[key], key)
+              changed(object, cachedObjects[key], key, ...args)
             }
           }
         }

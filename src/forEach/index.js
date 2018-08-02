@@ -16,23 +16,23 @@ export default function forEach(selector, options) {
     let cachedObjects
     let newObjects
 
-    const changedFunc = changed ? (key, object, i) => {
+    const changedFunc = changed ? (key, object, i, ...args) => {
       if (i === 0) newObjects = {}
       newObjects[key] = object
       if (cachedObjects && cachedObjects[key] !== undefined && cachedObjects[key] !== object) {
-        changed(object, cachedObjects[key], key)
+        changed(object, cachedObjects[key], key, ...args)
       }
     } : () => {}
 
 
-    const c = doWhen((state, call, filterFunc) => {
+    const c = doWhen((state, call, filterFunc, ...args) => {
       if (state) {
         for (let i = 0; i < state.length; i++) {
           const object = state[i]
           const key = keyExtractor(object, i)
           if (filterFunc(object, key)) {
-            call(constructFunc, object, key)
-            changedFunc(key, object, i)
+            call(constructFunc, object, key, ...args)
+            changedFunc(key, object, i, ...args)
           }
         }
         cachedObjects = newObjects

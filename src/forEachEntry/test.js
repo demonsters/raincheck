@@ -68,5 +68,23 @@ describe('forEachEntry()', () => {
   })
 
 
+  it('should pass down rest arguments', () => {
+
+    const start = jest.fn()
+    const changed = jest.fn()
+    const arg1 = {}
+    const arg2 = {}
+    let check = forEachEntry({
+      do: start,
+      changed
+    })
+
+    check({key: 'one'}, arg1, arg2)
+    check({key: 'one2'}, arg1, arg2)
+
+    expect(start).toBeCalledWith("one", expect.anything(), arg1, arg2);
+    expect(changed).toBeCalledWith("one2", "one", expect.anything(), arg1, arg2);
+
+  })
 
 })

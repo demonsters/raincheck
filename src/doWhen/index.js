@@ -18,7 +18,7 @@ export default function doWhen(checkFunc) {
     let destructFuncs = {}
     let destructKeys
 
-    const callFunc = (func, props, key) => {
+    const callFunc = (func, props, key, ...args) => {
 
       if (key === undefined) {
         if (typeof props === 'string') {
@@ -35,7 +35,11 @@ export default function doWhen(checkFunc) {
         if (constructMock) {
           constructMock(func, props, key)
         } else {
-          destructFuncs[key] = createNext(next => func(props, next))
+          if (args && args.length > 0) {
+            destructFuncs[key] = createNext(next => func(props, next, ...args))
+          } else {
+            destructFuncs[key] = createNext(next => func(props, next))
+          }
         }
         if (destructMock) {
           destructFuncs[key] = () => destructMock(key)
@@ -48,14 +52,14 @@ export default function doWhen(checkFunc) {
 
     let oldState = {}
 
-    return (state, args) => {
+    return (state, ...args) => {
       const newState = selector(state)
       if (shallowDiffers(oldState, newState)) {
         destructKeys = Object.keys(destructFuncs)
         
         oldState = newState
 
-        checkFunc(newState, callFunc, filterFunc)
+        checkFunc(newState, callFunc, filterFunc, ...args)
 
         // destructKeys.forEach(key => {
         for (let i = 0; i < destructKeys.length; i++) {

@@ -191,9 +191,23 @@ describe('when()', () => {
     })
 
     const obj1 = "object 1"
-    tester({ value: obj1 });
+    tester(obj1);
     expect(start).toBeCalledWith(obj1, expect.anything());
   })
 
+  it('should pass down rest arguments', () => {
+
+    const changed = jest.fn()
+    const arg1 = {}
+    const arg2 = {}
+    let check = when({
+      do: changed
+    })
+
+    check(true, arg1, arg2)
+
+    expect(changed).toBeCalledWith(true, expect.anything(), arg1, arg2);
+
+  })
 })
 

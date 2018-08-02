@@ -218,5 +218,25 @@ describe('forEach()', () => {
     })
   })
 
+  it('should pass down rest arguments', () => {
+
+    const start = jest.fn()
+    const changed = jest.fn()
+    const arg1 = {}
+    const arg2 = {}
+    let check = forEach({
+      keyExtractor: item => item.id,
+      do: start,
+      changed
+    })
+    const obj1 = {id: 'one'}
+    const obj2 = {id: 'one'}
+    check([obj1], arg1, arg2)
+    check([obj2], arg1, arg2)
+
+    expect(start).toBeCalledWith(obj1, expect.anything(), arg1, arg2);
+    expect(changed).toBeCalledWith(obj2, obj1, expect.anything(), arg1, arg2);
+
+  })
 
 })
