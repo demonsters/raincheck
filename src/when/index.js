@@ -20,7 +20,7 @@ const when = (selector, options) => {
       return (state, ...args) => {
         let newState = selector(state)
         if (newState !== oldState) {
-          if (destruct) destruct()
+          if (destruct) destruct(...args)
           if (newState !== undefined && newState !== null && newState !== false) {
             const tmp = oldState
             oldState = newState

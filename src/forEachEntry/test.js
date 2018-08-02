@@ -72,18 +72,24 @@ describe('forEachEntry()', () => {
 
     const start = jest.fn()
     const changed = jest.fn()
+    const deleted = jest.fn()
     const arg1 = {}
     const arg2 = {}
     let check = forEachEntry({
-      do: start,
+      do: (...args) => {
+        start(...args)
+        return deleted
+      },
       changed
     })
 
     check({key: 'one'}, arg1, arg2)
     check({key: 'one2'}, arg1, arg2)
+    check({}, arg2, arg1)
 
     expect(start).toBeCalledWith("one", expect.anything(), arg1, arg2);
     expect(changed).toBeCalledWith("one2", "one", expect.anything(), arg1, arg2);
+    expect(deleted).toBeCalledWith(arg2, arg1);
 
   })
 

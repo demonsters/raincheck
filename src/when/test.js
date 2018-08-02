@@ -198,15 +198,21 @@ describe('when()', () => {
   it('should pass down rest arguments', () => {
 
     const changed = jest.fn()
+    const deleted = jest.fn()
     const arg1 = {}
     const arg2 = {}
     let check = when({
-      do: changed
+      do: (...args) => {
+        changed(...args)
+        return deleted
+      }
     })
 
     check(true, arg1, arg2)
+    check(false, arg2, arg1)
 
     expect(changed).toBeCalledWith(true, expect.anything(), arg1, arg2);
+    expect(deleted).toBeCalledWith(arg2, arg1);
 
   })
 })

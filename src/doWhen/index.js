@@ -65,7 +65,7 @@ export default function doWhen(checkFunc) {
         for (let i = 0; i < destructKeys.length; i++) {
           const key = destructKeys[i]
           if (destructFuncs[key]) {
-            destructFuncs[key]()
+            destructFuncs[key](...args)
             destructFuncs[key] = undefined
           }
         }
