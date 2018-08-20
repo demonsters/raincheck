@@ -1,60 +1,40 @@
 import createNext from './../_libs/createChainAPI';
 import createConstruct from '../_libs/createConstruct'
+import createSetup from '../_libs/createSetup';
 
 import doWhen from '../doWhen'
 
-const when = (selector, options) => {
-
-  if (typeof selector !== "function") {
-    options = selector
-    selector = s => s
-  }
-
-  const create = (constructFunc) => {
-      
-    const c = createConstruct((selector, constructMock, destructMock) => {
-  
-      let oldState = undefined
-      let destruct
-  
-      return (state, ...args) => {
-        let newState = selector(state)
-        if (newState !== oldState) {
-          if (destruct) destruct(...args)
-          if (newState !== undefined && newState !== null && newState !== false) {
-            const tmp = oldState
-            oldState = newState
-            if (constructMock) {
-              constructMock(constructFunc, newState) // need key?
-            } else {
-              destruct = createNext(next => constructFunc(newState, next, ...args))
-            }
-          } else {
-            oldState = false
-          }
-        }
-      }
-    }).map(selector)
+const when = createSetup((selector, constructFunc, changedFunc = () => {}, keyExtractor = s => s) => {
     
-    return c
-  }
+  const c = createConstruct((selector, constructMock, destructMock) => {
 
-  // if (typeof defaultValue === "function") {
-  //   return create(defaultValue, undefined)
-  // }
+    let oldState = undefined
+    let destruct
 
-  if (options) {
-    if (typeof options === "function") {
-      return create(options)
+    return (state, ...args) => {
+      let newState = selector(state)
+      const newKey = newState && keyExtractor(newState)
+      const oldKey = oldState && keyExtractor(oldState)
+      if (newKey !== oldKey) {
+        if (destruct) destruct(...args)
+        if (newState !== undefined && newState !== null && newState !== false) {
+          const tmp = oldState
+          oldState = newState
+          if (constructMock) {
+            constructMock(constructFunc, newState) // need key?
+          } else {
+            destruct = createNext(next => constructFunc(newState, next, ...args))
+          }
+        } else {
+          oldState = false
+        }
+      } else if (newState !== oldState) {
+        changedFunc(newState, oldState, newKey)
+      }
     }
-    if (options.do) {
-      return create(options.do)
-    }
-  }
+  }).map(selector)
+  
+  return c
+})
 
-  return {
-    do: (constructFunc) => create(constructFunc)
-  }
-
-}
 export default when
