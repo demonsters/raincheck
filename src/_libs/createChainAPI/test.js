@@ -59,6 +59,44 @@ describe('createNext', () => {
 
   })
 
+
+  it('Should prevent next being called twice', () => {
+
+    const firstStart = jest.fn();
+    const firstEnd = jest.fn();
+
+    const secondStart = jest.fn();
+    const secondEnd = jest.fn();
+
+    let nextHandler
+
+    const doTest1 = (next) => {
+      firstStart()
+      nextHandler = () => next(doTest2)
+      return firstEnd
+    }
+
+    const doTest2 = () => {
+      secondStart()
+      return secondEnd
+    }
+
+    const destruct = createNext(doTest1)
+    expect(firstStart).toBeCalled()
+
+    nextHandler()
+    nextHandler()
+
+    expect(secondStart).toBeCalled()
+
+    destruct()
+    destruct()
+
+    expect(secondEnd).toHaveBeenCalledTimes(1)
+    expect(firstEnd).not.toBeCalled()
+
+  })
+
   it('Should complex', () => {
 
     const firstStart = jest.fn();
@@ -162,6 +200,48 @@ describe('createNext', () => {
   })
 
 
+  it('Should destruct when next is called with no arguments is called', () => {
+
+    const firstStart = jest.fn();
+    const firstEnd = jest.fn();
+
+    const secondStart = jest.fn();
+    const secondEnd = jest.fn();
+
+    let nextHandler1
+    let nextHandler2
+
+    const doTest1 = (next) => {
+      firstStart()
+      nextHandler1 = () => next(doTest2)
+      return firstEnd
+    }
+
+    const doTest2 = (next) => {
+      secondStart()
+      nextHandler2 = () => next(undefined)
+      return secondEnd
+    }
+
+    const destruct = createNext(doTest1)
+    expect(firstStart).toBeCalled()
+
+    nextHandler1()
+
+    expect(secondStart).toBeCalled()
+
+    nextHandler2()
+
+    destruct()
+    destruct()
+    expect(firstEnd).not.toBeCalled()
+
+    expect(secondEnd).not.toBeCalled()
+
+  })
+
+
+
   xit('Should destruct when first argument === false', () => {
 
     const firstStart = jest.fn();
@@ -234,5 +314,6 @@ describe('createNext', () => {
     expect(secondEnd).toHaveBeenCalledTimes(1)
 
   })
+
 
 })
