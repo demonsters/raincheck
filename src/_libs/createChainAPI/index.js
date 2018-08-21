@@ -1,71 +1,58 @@
 
-const createNext = (parentFunc, shouldCheckDouble) => {
-  let calledNext = false
 
-  let doNext = (doDestruct) => (...creators) => {
+const createNext = () => {
 
-    if (shouldCheckDouble && calledNext && doDestruct) {
-      // Silently prevent next from being called twice
-      // console.warn("cannot call destruct twice")
-      return
-    }
-    calledNext = true
+  let destructs = []
+  let branch = []
+  
+  const createNextAPI = (parentFunc) => {
 
-    // call all creators, and add the destruct returns into an array
-    let destructs = creators
-      .map(creator => {
+    const doNext = (shouldDestruct) => (...constructors) => {
 
-        if (!creator) {
-          return null
-        }
+      parentFunc(shouldDestruct)
 
-        let destruct
-
-
-        const next = createNext((d, doDestruct) => {
-          
-          // This is called when a `next` is called on a child 
-          
-          if (doDestruct) {
-            destructs = destructs.filter(d => d !== destruct)
+      // Add new destructs
+      const destructors = constructors.forEach(constructor => {
+        if (!constructor) return
+        const destruct = constructor(createNextAPI((didDestruct) => {
+          if (didDestruct) {
+            if (shouldDestruct) {
+              destructs = destructs.filter(d => d !== destruct)
+            } else {
+              branch = branch.filter(d => d !== destruct)
+            }
           }
-
-          // Add the new destruct function
-          destructs.push(d)
-
-        }, true)
-
-        destruct = creator(next)
-        if (!destruct) {
-          return null
+        }))
+        if (!destruct) return
+        if (shouldDestruct) {
+          destructs.push(destruct)
+        } else {
+          branch.push(destruct)
         }
-
-        return destruct
       })
 
-    // Create a new destruct which calls all destructs
-    const destructFunc = (...args) => {
-      destructs.forEach(destruct => {
-        destruct && typeof destruct === 'function' && destruct(...args)
-      })
-      destructs.length = 0
+      // Destructs
+      return (...args) => {
+        branch.forEach((destruct) => destruct(...args))
+        branch.length = 0
+        destructs.forEach((destruct) => destruct(...args))
+        destructs.length = 0
+      }
     }
 
-    parentFunc(destructFunc, doDestruct)
+    let nextAPI = doNext(true)
+    nextAPI.branch = doNext(false)
+    nextAPI.fork = doNext(false)
+    nextAPI.complete = nextAPI
+    nextAPI.finish = nextAPI
+    nextAPI.resolve = nextAPI
+    nextAPI.chain = nextAPI
+    nextAPI.next = nextAPI
 
-    return destructFunc
+    return nextAPI
   }
 
-  let next = doNext(true)
-  next.branch = doNext(false)
-  next.fork = doNext(false)
-  next.complete = next
-  next.finish = next
-  next.resolve = next
-  next.chain = next
-  next.next = next
-
-  return next
+  return createNextAPI(() => {})
 }
 
-export default createNext(() => {}, false)
+export default (...args) => createNext()(...args)

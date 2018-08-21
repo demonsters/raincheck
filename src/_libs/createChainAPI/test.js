@@ -60,7 +60,7 @@ describe('createNext', () => {
   })
 
 
-  it('Should prevent next being called twice', () => {
+  xit('Should prevent next being called twice', () => {
 
     const firstStart = jest.fn();
     const firstEnd = jest.fn();
@@ -219,7 +219,7 @@ describe('createNext', () => {
 
     const doTest2 = (next) => {
       secondStart()
-      nextHandler2 = () => next(undefined)
+      nextHandler2 = () => next()
       return secondEnd
     }
 
@@ -237,44 +237,6 @@ describe('createNext', () => {
     expect(firstEnd).not.toBeCalled()
 
     expect(secondEnd).not.toBeCalled()
-
-  })
-
-
-
-  xit('Should destruct when first argument === false', () => {
-
-    const firstStart = jest.fn();
-    const firstEnd = jest.fn();
-
-    const secondStart = jest.fn();
-    const secondEnd = jest.fn();
-
-    let nextHandler
-
-    const doTest1 = (next) => {
-      firstStart()
-      nextHandler = () => next(false, doTest2)
-      return firstEnd
-    }
-
-    const doTest2 = () => {
-      secondStart()
-      return secondEnd
-    }
-
-    const destruct = createNext(doTest1)
-    expect(firstStart).toBeCalled()
-
-    nextHandler()
-
-    expect(secondStart).toBeCalled()
-
-    destruct()
-    destruct()
-    expect(firstEnd).toBeCalled()
-
-    expect(secondEnd).toHaveBeenCalledTimes(1)
 
   })
 
@@ -311,7 +273,49 @@ describe('createNext', () => {
     destruct()
     expect(firstEnd).toBeCalled()
 
+    expect(secondStart).toHaveBeenCalledTimes(1)
     expect(secondEnd).toHaveBeenCalledTimes(1)
+
+  })
+
+
+
+
+  it('Should not call destruct when its resolved before destructed', () => {
+
+    const firstStart = jest.fn();
+    const firstEnd = jest.fn();
+
+    const secondStart = jest.fn();
+    const secondEnd = jest.fn();
+
+    let nextHandler
+    let nextHandler2
+
+    const doTest1 = (next) => {
+      firstStart()
+      nextHandler = () => next.branch(doTest2)
+      return firstEnd
+    }
+
+    const doTest2 = (next) => {
+      secondStart()
+      nextHandler2 = () => next.resolve()
+      return secondEnd
+    }
+
+    const destruct = createNext(doTest1)
+
+    nextHandler()
+    nextHandler2()
+    
+    expect(firstEnd).not.toHaveBeenCalled()
+
+    destruct()
+    destruct()
+
+    expect(secondStart).toHaveBeenCalled()
+    expect(secondEnd).not.toHaveBeenCalled()
 
   })
 
