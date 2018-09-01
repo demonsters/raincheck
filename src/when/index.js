@@ -2,8 +2,6 @@ import createNext from './../_libs/createChainAPI';
 import createConstruct from '../_libs/createConstruct'
 import createSetup from '../_libs/createSetup';
 
-import doWhen from '../doWhen'
-
 const when = createSetup((selector, constructFunc, changedFunc = () => {}, keyExtractor = s => s) => {
     
   const c = createConstruct((selector, constructMock, destructMock) => {
