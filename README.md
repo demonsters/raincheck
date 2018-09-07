@@ -218,13 +218,13 @@ export default (store) => {
 
 const selector = createSelector(
   s => s.projects, 
-  s => s.login, 
-  (project, login) => (project && {project, login}), 
+  s => s.user, 
+  (projects, user) => (projects && {projects, user}), 
 )
 
-when(select).do(({project, login}) => {
+when(selector).do(({project, login}) => {
 
-  // Called when project is truety & project & login is changed
+  // Called when project is truthy & project & user is changed
   
 })
 
@@ -237,7 +237,7 @@ Here an example to sync an array to PouchDb:
 ```javascript
 
 const check = forEach({
-  do: item => {
+  do: items => {
     db.put(item)
     return () => db.delete(item)
   },
@@ -288,7 +288,7 @@ it('should connect to socket', () => {
 
 `doForAll` will be replaced by `forEachEntity`
 
-`doForAllKeys` will be replaced by `forEach`, it doesn't have to be a string anymore the key is kan now be extract with `keyExtractor`
+`doForAllKeys` will be replaced by `forEach`, it doesn't have to be a string anymore the key is can now be extract with `keyExtractor`
 
 Both `doWhenTrue` & `doWhenChanged` will be replace by `when`.
 
