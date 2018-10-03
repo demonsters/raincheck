@@ -31,3 +31,16 @@ const checkMapFunction = () => {
   // $ExpectError
   recheck(["adsfsd"])
 }
+
+const checkMapAndSettings = () => {
+  const recheck = forEach((s: string) => [{name: s}], {
+    do:(item: Item) => {
+      console.log(item)
+    }
+  })
+    
+  recheck("adsfsd")
+
+  // $ExpectError
+  recheck(["adsfsd"])
+}
