@@ -1,59 +1,47 @@
 
-const createNext = (parentFunc) => {
 
-  let doNext = doDestruct => (...creators) => {
+const createNext = () => {
 
-    // call all creators, and add the destruct returns into an array
-    let destructs = creators
-      .map(creator => {
+  let destructs = []
+  
+  const createNextAPI = (parentFunc) => {
 
-        if (!creator) {
-          return null
-        }
+    const doNext = (shouldDestruct) => (...constructors) => {
 
-        let destruct
+      parentFunc(shouldDestruct)
 
-        const next = createNext((d, doDestruct) => {
-
-          if (doDestruct) {
+      // Add new destructs
+      const destructors = constructors.forEach(constructor => {
+        if (!constructor) return
+        const destruct = constructor(createNextAPI((didDestruct) => {
+          if (didDestruct) {
             destructs = destructs.filter(d => d !== destruct)
           }
-
-          // Add the new destruct function
-          destructs.push(d)
-
-        })
-
-        destruct = creator(next)
-        if (!destruct) {
-          return null
+        }))
+        if (destruct && typeof destruct === "function") {
+          destructs.push(destruct)
         }
-
-        return destruct
       })
 
-    // Create a new destruct which calls all destructs
-    const destruct = (...args) => {
-      destructs.forEach(destruct => {
-        destruct && typeof destruct === 'function' && destruct(...args)
-      })
-      destructs.length = 0
+      // Destructs
+      return (...args) => {
+        destructs.forEach((destruct) => destruct(...args))
+        destructs.length = 0
+      }
     }
 
-    parentFunc(destruct, doDestruct)
-
-    return destruct
+    let nextAPI = doNext(true)
+    nextAPI.branch = doNext(false)
+    nextAPI.fork = doNext(false)
+    nextAPI.complete = nextAPI
+    nextAPI.finish = nextAPI
+    nextAPI.resolve = nextAPI
+    nextAPI.chain = nextAPI
+    nextAPI.next = nextAPI
+    return nextAPI
   }
 
-  let next = doNext(true)
-  next.branch = doNext(false)
-  next.fork = doNext(false)
-  next.complete = next
-  next.resolve = next
-  next.chain = next
-  next.next = next
-
-  return next
+  return createNextAPI(() => {})
 }
 
-export default createNext(() => {})
+export default (...args) => createNext()(...args)

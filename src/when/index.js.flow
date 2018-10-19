@@ -16,3 +16,8 @@ declare export default function when<O, I> (mapValue: (item: I) => O): ChainFunc
 declare export default function when<O, I, P> (settings: {
   do: ConstructFunction<O, P>
 }): DoWhen<O, I>
+
+// Map value and settings
+declare export default function when<O, I, P> (mapValue: (item: I) => O, settings: {
+  do: ConstructFunction<O, P>
+}): DoWhen<O, I>

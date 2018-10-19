@@ -20,7 +20,7 @@ const checkMapFunction = () => {
     
   recheck("adsfsd")
 
-  // $ExpectError
+  // @ts-ignore: Should fail
   recheck(["adsfsd"])
 }
 
@@ -36,6 +36,6 @@ const checkWithMapAndSettings = () => {
     
   recheck("adsfsd")
 
-  // $ExpectError
+  // @ts-ignore: Should fail
   recheck(["adsfsd"])
 }

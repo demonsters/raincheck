@@ -215,5 +215,33 @@ describe('when()', () => {
     expect(deleted).toBeCalledWith(arg2, arg1);
 
   })
+
+  it('should call changed', () => {
+
+    const start = jest.fn();
+    const changed = jest.fn();
+    const obj1 = {name: "obj1", id: 1}
+    const obj2 = {name: "obj2", id: 1}
+    const tester = when({
+      do: (item: Array<typeof obj1>) => start(item),
+      changed,
+      keyExtractor: s => s.id
+    })
+
+    tester(obj1)
+
+    // Start obj1
+    tester(obj2)
+
+    expect(changed).toBeCalledWith(obj2, obj1, 1)
+
+    tester(undefined)
+
+    expect(changed).toHaveBeenCalledTimes(1)
+
+  })
+
+
+
 })
 

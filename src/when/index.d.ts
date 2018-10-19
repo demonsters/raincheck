@@ -25,3 +25,8 @@ export default function when<O, I> (mapValue: (item: I) => O): ChainFunctions<O,
 export default function when<O, I> (settings: {
   do: ConstructFunction<O>
 }): DoWhen<O, I>
+
+// Map value and settings
+export default function when<O, I> (mapValue: (item: I) => O, settings: {
+  do: ConstructFunction<O>
+}): DoWhen<O, I>
