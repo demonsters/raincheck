@@ -8,6 +8,7 @@ Do something when the conditions are right and cancel them if they're not.
 - Focused on doing one thing
 - Small in size
 - Works for multiple purposes
+- No dependancies
 
 
 Say you want to connect to a socket when you’re logged in and want to disconnect when you’re not. 
@@ -66,7 +67,7 @@ Raincheck consists of 3 function:
 - `forEach`: For an array of objects
 - `forEachEntry`: For an key-value based objects
 
-Each function accepts a map function a settings object or both:
+Each function accepts a map function, a settings object or both:
 
 ```javascript
 
@@ -186,6 +187,8 @@ To connect to a store you use `createMiddleware()`, like so:
 
 ```javascript
 
+import { createMiddleware } from 'raincheck'
+
 export default createMiddleware(
   when(state => state.login.isLoggedIn && state.socket.url)
     .do(connectToSocket)
@@ -224,7 +227,7 @@ const selector = createSelector(
 
 when(selector).do(({project, login}) => {
 
-  // Called when project is truthy & project & user is changed
+  // Called when project is truthy & project or user is changed
   
 })
 
