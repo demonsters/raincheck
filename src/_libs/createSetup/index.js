@@ -1,7 +1,7 @@
 
 export default (create) => (selector, options) => {
 
-  if (typeof selector !== "function") {
+  if (typeof selector !== "function" && !Array.isArray(selector)) {
     options = selector
     selector = s => s
   }

@@ -375,7 +375,7 @@ createMiddleware(
 - Change `map` to apply to all entries
 - Remove `doForAll`, `doForAllKeys`, `doWhenTrue` & `doWhenChanged`
 - Choose functions for chaining API:
-  - `branch` or `fork`
-  - `complete`, `finish` or `resolve`
-  - `chain` or `next`
+  - `branch` or `fork` (`branch`)
+  - `complete`, `finish`, `end` or `resolve`
+  - `chain` or `next` (`next`)
 - Change `when` to send all parameters to `do` instead of just the value of the selector?
