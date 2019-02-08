@@ -1,6 +1,6 @@
 {
   "name": "raincheck",
-  "version": "0.3.0",
+  "version": "0.4.0-alpha.0",
   "description": "Do something when the conditions are right and cancel them if they're not.",
   "main": "lib/index.js",
   "scripts": {
@@ -32,6 +32,13 @@
     "fs-extra": "^4.0.1",
     "jest": "^23.6.0",
     "jest-cli": "^23.6.0",
+    "jest-watch-typeahead": "^0.2.1",
     "redux": "^3.6.0"
+  },
+  "jest": {
+    "watchPlugins": [
+      "jest-watch-typeahead/filename",
+      "jest-watch-typeahead/testname"
+    ]
   }
 }
