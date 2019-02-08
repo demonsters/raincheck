@@ -39,3 +39,22 @@ const checkWithMapAndSettings = () => {
   // @ts-ignore: Should fail
   recheck(["adsfsd"])
 }
+
+
+const checkWithDepenencies = () => {
+  type Ob = {
+    name: string,
+    value: number
+  }
+  const recheck = when(
+    (s: Ob) => s.name, {
+      and: [s => s.value],
+      do: (name: string, value: number) => {
+        
+      }
+    }
+  )
+    
+  recheck(({name: "s", value: 1}))
+
+}
