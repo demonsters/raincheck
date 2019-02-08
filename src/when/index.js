@@ -6,18 +6,19 @@ import createSetup from '../_libs/createSetup';
 
 const emptyArray = []
 
-const when = createSetup((selector, constructFunc, changedFunc = () => {}, keyExtractor = s => s) => {
+const when = createSetup((selector, constructFunc, changedFunc = () => {}, keyExtractor = s => s, deps = null) => {
   
-  // const c = createConstruct((selector, constructMock, destructMock) => {
+  const c = createConstruct((selector, constructMock, destructMock) => {
 
-    if (Array.isArray(selector)) {
+    if (deps) {
 
       let oldState = emptyArray
       let destruct
+      let selectors = [selector, ...deps]
     
       return (state, ...args) => {
         let isChanged = false
-        let newState = selector.map((s, i) => {
+        let newState = selectors.map((s, i) => {
           let newState = s(state)
           if (oldState.length < i || newState !== oldState[i]) {
             isChanged = true
@@ -63,9 +64,9 @@ const when = createSetup((selector, constructFunc, changedFunc = () => {}, keyEx
         changedFunc(newState, oldState, newKey)
       }
     }
-  // }).map(selector)
+  }).map(selector)
 
-  // return c
+  return c
 
 })
 

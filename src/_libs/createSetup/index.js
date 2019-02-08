@@ -11,7 +11,7 @@ export default (create) => (selector, options) => {
       return create(selector, options)
     }
     if (options.do) {
-      return create(selector, options.do, options.changed, options.keyExtractor)
+      return create(selector, options.do, options.changed, options.keyExtractor, options.with || options.and)
     }
   }
 
