@@ -245,4 +245,25 @@ describe('forEach()', () => {
 
   })
 
+  // TODO: Add this:
+  xit('dependencies', () => {
+
+    const start = jest.fn()
+
+    let check = forEach(s => s.array, {
+      keyExtractor: i => i.id,
+      with: [s => s.value],
+      do: (...args) => {
+        start(...args)
+      }
+    })
+    const obj1 = {value: "one", array: [{id: 'one'}, {id: 'two'}]}
+    const obj2 = {value: "two", array: [{id: 'one'}, {id: 'two'}]}
+    check(obj1)
+    expect(start).toHaveBeenCalledTimes(2)
+    check(obj2)
+    expect(start).toHaveBeenCalledTimes(4)
+  })
+
+
 })

@@ -282,6 +282,21 @@ describe('when()', () => {
 
   })
 
+  it('should not call and when the first selector is not truthy', () => {
+
+    const and = jest.fn();
+
+    const check = when(o => o, {
+      and: [and],
+      do: (...args) => {
+        
+      }
+    })
+
+    check(false)
+    expect(and).not.toHaveBeenCalled()
+  })
+
 
   // it('should match multiple selectors', () => {
 

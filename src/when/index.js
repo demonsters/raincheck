@@ -20,7 +20,7 @@ const when = createSetup((selector, constructFunc, changedFunc = () => {}, keyEx
         let isChanged = false
         let isOneFalsy = false
         let newState = selectors.map((s, i) => {
-          let newState = s(state)
+          let newState = !isOneFalsy && s(state)
           if (oldState.length < i || newState !== oldState[i]) {
             isChanged = true
           }
