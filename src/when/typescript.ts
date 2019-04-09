@@ -41,7 +41,7 @@ const checkWithMapAndSettings = () => {
 }
 
 
-const checkWithDepenencies = () => {
+const checkWith1Depenencies = () => {
   type Ob = {
     name: string,
     value: number
@@ -50,6 +50,28 @@ const checkWithDepenencies = () => {
     (s: Ob) => s.name, {
       and: [s => s.value],
       do: (name: string, value: number) => {
+        
+      }
+    }
+  )
+    
+  recheck(({name: "s", value: 1}))
+
+}
+
+const checkWith2Depenencies = () => {
+  type Ob = {
+    name: string,
+    value: number,
+    value2: boolean,
+  }
+  const recheck = when(
+    (s: Ob) => s.name, {
+      and: [
+        s => s.value,
+        s => s.value2,
+      ],
+      do: (name: string, value: number, value2: boolean) => {
         
       }
     }

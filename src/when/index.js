@@ -18,23 +18,25 @@ const when = createSetup((selector, constructFunc, changedFunc = () => {}, keyEx
     
       return (state, ...args) => {
         let isChanged = false
+        let isOneFalsy = false
         let newState = selectors.map((s, i) => {
           let newState = s(state)
           if (oldState.length < i || newState !== oldState[i]) {
             isChanged = true
           }
+          isOneFalsy = isOneFalsy || (newState === undefined || newState === null || newState === false)
           return newState
         })
         const newKey = newState
         const oldKey = oldState
         if (isChanged) {
           if (destruct) destruct(...args)
-          if (newState !== undefined && newState !== null && newState !== false) {
+          if (!isOneFalsy) {
             const tmp = oldState
             oldState = newState
             destruct = createNext(next => constructFunc(...newState, next, ...args))
           } else {
-            oldState = emptyArray
+            // oldState = emptyArray
           }
         }
       }

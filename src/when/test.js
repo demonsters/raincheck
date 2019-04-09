@@ -267,9 +267,18 @@ describe('when()', () => {
     expect(start).toBeCalledTimes(1)
     
     check({name: "name2", id: "id"})
-
+    
+    expect(start).toBeCalledWith("name2", "id", expect.anything())
+    expect(start).toBeCalledTimes(2)
     expect(end).toBeCalledWith()
     expect(end).toBeCalledTimes(1)
+    
+    check({name: "name3", id: null})
+    
+    expect(start).not.toBeCalledWith("name3", null, expect.anything())
+    expect(start).toBeCalledTimes(2)
+    expect(end).toBeCalledWith()
+    expect(end).toBeCalledTimes(2)
 
   })
 
