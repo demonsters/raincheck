@@ -21,16 +21,16 @@ type ChainFunctions<S, I> = {
 
 
 // No arguments
-export default function forEachEntry<O> (): ChainFunctions<O, Value<O>>
+export default function forEachEntry<O> (): ChainFunctions<O, Value<O>>;
 
 // Map 
-export default function forEachEntry<O, I> (mapValue: (item: I) => Value<O>): ChainFunctions<O, I>
+export default function forEachEntry<O, I> (mapValue: (item: I) => Value<O>): ChainFunctions<O, I>;
 
 // Map & change function
-export default function forEachEntry<O, I, P> (mapValue:  (item: I) => Value<O>, changedFunc: ChangedFunction<O>): DoWhen<O, I>
+export default function forEachEntry<O, I, P> (mapValue:  (item: I) => Value<O>, changedFunc: ChangedFunction<O>): DoWhen<O, I>;
 
 // Settings
 export default function forEachEntry<O, P> (settings: {
   do: ConstructFunction<O>, 
   changed?: ChangedFunction<O>, 
-}): DoWhen<O, Value<O>>
+}): DoWhen<O, Value<O>>;

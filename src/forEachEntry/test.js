@@ -93,4 +93,30 @@ describe('forEachEntry()', () => {
 
   })
 
+
+  // TODO: Add this:
+  it('dependencies', () => {
+
+    const start = jest.fn()
+
+    let check = forEachEntry(s => s.array, {
+      when: [s => s.value],
+      do: (...args) => {
+        start(...args)
+      }
+    })
+    const obj1 = {value: "extra", array: {one: 'one'}}
+    const obj2 = {value: false, array: {one: 'one', two: 'two'}}
+    const obj3 = {value: true, array: {one: 'one', two: 'two'}}
+    check(obj1)
+    expect(start).toHaveBeenCalledWith("one", "extra", expect.anything())
+    expect(start).toHaveBeenCalledTimes(1)
+    check(obj2)
+    expect(start).toHaveBeenCalledTimes(1)
+    check(obj3)
+    expect(start).toHaveBeenCalledWith("one", true, expect.anything())
+    expect(start).toHaveBeenCalledWith("two", true, expect.anything())
+    expect(start).toHaveBeenCalledTimes(3)
+  })
+
 })
