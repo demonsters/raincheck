@@ -282,7 +282,7 @@ describe('when()', () => {
 
   })
 
-  it('should not call and when the first selector is not truthy', () => {
+  it('Should not call `and` when the first expression is not passed', () => {
 
     const and = jest.fn();
 
