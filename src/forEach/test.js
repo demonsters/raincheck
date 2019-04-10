@@ -246,23 +246,28 @@ describe('forEach()', () => {
   })
 
   // TODO: Add this:
-  xit('dependencies', () => {
+  it('dependencies', () => {
 
     const start = jest.fn()
 
     let check = forEach(s => s.array, {
-      keyExtractor: i => i.id,
-      with: [s => s.value],
+      and: [s => s.value],
       do: (...args) => {
         start(...args)
       }
     })
-    const obj1 = {value: "one", array: [{id: 'one'}, {id: 'two'}]}
-    const obj2 = {value: "two", array: [{id: 'one'}, {id: 'two'}]}
+    const obj1 = {value: "extra", array: ['one']}
+    const obj2 = {value: false, array: ['one', 'two']}
+    const obj3 = {value: true, array: ['one', 'two']}
     check(obj1)
-    expect(start).toHaveBeenCalledTimes(2)
+    expect(start).toHaveBeenCalledWith("one", "extra", expect.anything())
+    expect(start).toHaveBeenCalledTimes(1)
     check(obj2)
-    expect(start).toHaveBeenCalledTimes(4)
+    expect(start).toHaveBeenCalledTimes(1)
+    check(obj3)
+    expect(start).toHaveBeenCalledWith("one", true, expect.anything())
+    expect(start).toHaveBeenCalledWith("two", true, expect.anything())
+    expect(start).toHaveBeenCalledTimes(3)
   })
 
 

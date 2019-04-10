@@ -11,7 +11,7 @@ function shallowDiffers (a, b) {
 }
 
 
-export default function doWhen(checkFunc) {
+export default function doWhen(checkFunc, middleware = false) {
 
   return createConstruct((selector, constructMock, destructMock, filterFunc) => {
 
@@ -23,6 +23,7 @@ export default function doWhen(checkFunc) {
       if (key === undefined) {
         if (typeof props === 'string') {
           key = props
+          props = null
         } else {
           key = "default"
         }
@@ -33,12 +34,14 @@ export default function doWhen(checkFunc) {
 
       if (destructFuncs[key] === undefined) {
         if (constructMock) {
-          constructMock(func, props, key)
+          constructMock(func, ...props, key)
         } else {
           if (args && args.length > 0) {
-            destructFuncs[key] = createNext(next => func(props, next, ...args))
+            destructFuncs[key] = createNext(next => func(...props, next, ...args))
+          } else if (props && props.length > 0) {
+            destructFuncs[key] = createNext(next => func(...props, next))
           } else {
-            destructFuncs[key] = createNext(next => func(props, next))
+            destructFuncs[key] = createNext(func)
           }
         }
         if (destructMock) {

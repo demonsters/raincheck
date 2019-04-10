@@ -16,7 +16,7 @@ type State = {
 const getTester = (connectToSocket: (props: Props) => any) => doWhen(
   ({isLoggedIn, url}: State, call) => {
     if (isLoggedIn && url) {
-      call(connectToSocket, url)
+      call(connectToSocket, [url])
     }
   }
 )
@@ -158,7 +158,7 @@ describe('doWhen', () => {
     }
 
     const tester = doWhen((array, call) => {
-      array.forEach(key => call(func, key) )
+      array.forEach(key => call(func, [key], key) )
     })
 
     const obj1 = "object 1"
@@ -229,11 +229,11 @@ describe('doWhen', () => {
     })
 
     tester("key1")
-    expect(start).toBeCalledWith("key1", expect.anything())
+    expect(start).toBeCalledWith(expect.anything())
     expect(start).toHaveBeenCalledTimes(1)
 
     tester("key2")
-    expect(start).toBeCalledWith("key2", expect.anything())
+    expect(start).toBeCalledWith(expect.anything())
     expect(start).toHaveBeenCalledTimes(2)
 
   })

@@ -24,6 +24,14 @@ type ChainFunctions<S, I> = {
   do: <P>(func: ConstructFunction<S>, options?: DoOptions<S> | ChangedFunction<S>) => DoWhen<S, I>;
 };
 
+interface DependencyOptions1<I, E1> extends Options<I> {
+  and: [(state: I) => E1]
+}
+
+interface DependencyOptions2<I, E1, E2> extends Options<I> {
+  and: [(state: I) => E1, (state: I) => E2]
+}
+
 
 // No arguments
 export default function forEach<S>(): ChainFunctions<S, Array<S>>;
@@ -43,3 +51,16 @@ export default function forEach<S, I>(
   mapValue: (item: I) => Array<S>,
   options: Options<S> | ConstructFunction<S>
 ): DoWhen<S, I>;
+
+// // Dependencies 1
+// export default function forEach<S, I, E1>(
+//   mapValue: (item: I) => Array<S>,
+//   options: DependencyOptions1<S, E1>
+// ): ((state: I, e1: E1, ...rest: any[]) => void);
+
+// // Dependencies 2
+// export default function forEach<S, I, E1, E2>(
+//   mapValue: (item: I) => Array<S>,
+//   options: DependencyOptions2<S, E1, E2>
+// ): ((state: I, e1: E1, e2: E2, ...rest: any[]) => void);
+

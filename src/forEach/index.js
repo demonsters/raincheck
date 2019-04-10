@@ -2,10 +2,11 @@ import createNext from './../_libs/createChainAPI';
 import createConstruct from '../_libs/createConstruct';
 import createSetup from '../_libs/createSetup';
 import doWhen from '../doWhen'
+import checkDeps from '../_libs/checkDeps';
 
 const emptyObject = {}
 
-export default createSetup((selector, constructFunc, changed, keyExtractor = s => s) => {
+export default createSetup((selector, constructFunc, changed, keyExtractor = s => s, deps = null) => {
 
   let cachedObjects
   let newObjects
@@ -18,22 +19,38 @@ export default createSetup((selector, constructFunc, changed, keyExtractor = s =
     }
   } : () => {}
 
+  let oldState = []
 
   const c = doWhen((state, call, filterFunc, ...args) => {
     if (state) {
-      for (let i = 0; i < state.length; i++) {
-        const object = state[i]
-        const key = keyExtractor(object, i)
-        if (filterFunc(object, key)) {
-          call(constructFunc, object, key, ...args)
-          changedFunc(key, object, i, ...args)
+      const array = selector(state)
+
+      if (array) {
+        let isChanged = false
+        let isOneFalsy = false
+        let newState = deps && deps.map((s, i) => {
+          let newState = !isOneFalsy && s(state)
+          if (oldState.length < i || newState !== oldState[i]) {
+            isChanged = true
+          }
+          isOneFalsy = isOneFalsy || (newState === undefined || newState === null || newState === false)
+          return newState
+        })
+
+        for (let i = 0; i < array.length; i++) {
+          const object = array[i]
+          const key = keyExtractor(object, i)
+          if (filterFunc(object, key) && !isOneFalsy) {
+            call(constructFunc, newState ? [object, ...newState] : [object], key, ...args)
+            changedFunc(key, object, i, ...args)
+          }
         }
+        cachedObjects = newObjects
+        return
       }
-      cachedObjects = newObjects
-    } else {
-      cachedObjects = emptyObject
     }
-  }).map(selector)
+    cachedObjects = emptyObject
+  })
   
   return c
 })

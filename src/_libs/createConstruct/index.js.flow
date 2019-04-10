@@ -2,7 +2,7 @@
 import type {ChainAPI} from '../createChainAPI'
 
 export type ConstructFunction<S, P> = (value: S, next: ChainAPI, ...args: P) => ?DestructFunction
-type DestructFunction = () => void
+export type DestructFunction = () => void
 
 export type DoWhen<O, I, P = Array<any>> = {
   (state: I, ...rest: P): void,

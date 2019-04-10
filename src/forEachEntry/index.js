@@ -22,7 +22,7 @@ const forEachEntry = (selector, options) => {
           const key = keys[i]
           const object = state[key]
           if (filterFunc(object)) {
-            call(constructFunc, object, key, ...args)
+            call(constructFunc, [object], key, ...args)
             
             if (changed && cachedObjects && cachedObjects[key] !== object) {
               changed(object, cachedObjects[key], key, ...args)
