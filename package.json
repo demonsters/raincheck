@@ -1,6 +1,6 @@
 {
   "name": "raincheck",
-  "version": "0.4.0-alpha.4",
+  "version": "0.4.0-alpha.5",
   "description": "Do something when the conditions are right and cancel them if they're not.",
   "main": "lib/index.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "babel-register": "^6.16.3",
     "benchmark": "^2.1.4",
     "find": "^0.2.7",
-    "flow-bin": "^0.92.1",
+    "flow-bin": "^0.96.0",
     "fs-extra": "^4.0.1",
     "jest": "^23.6.0",
     "jest-cli": "^23.6.0",
