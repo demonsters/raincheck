@@ -37,7 +37,21 @@ const forEachEntry = (selector, options) => {
             const key = keys[i]
             const object = entries[key]
             if (filterFunc(object) && !isOneFalsy) {
-              call(constructFunc, newState ? [object, ...newState] : [object], key, ...args)
+              let params 
+              if (newState) {
+                if (options && options.withKey) {
+                  params = [object, key, ...newState]
+                } else {
+                  params = [object, ...newState]
+                }
+              } else {
+                if (options && options.withKey) {
+                  params = [object, key]
+                } else {
+                  params = [object]
+                }
+              }
+              call(constructFunc, params, key, ...args)
               
               if (changed && cachedObjects && cachedObjects[key] !== object) {
                 changed(object, cachedObjects[key], key, ...args)

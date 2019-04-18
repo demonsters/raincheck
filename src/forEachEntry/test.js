@@ -93,6 +93,22 @@ describe('forEachEntry()', () => {
 
   })
 
+  it('withKey', () => {
+
+    const start = jest.fn()
+
+    let check = forEachEntry({
+      withKey: true,
+      do: (...args) => {
+        start(...args)
+      }
+    })
+    const obj1 = {value: "one"}
+    check(obj1)
+    expect(start).toHaveBeenCalledWith("one", "value", expect.anything())
+
+  })
+
 
   // TODO: Add this:
   it('dependencies', () => {

@@ -1,5 +1,5 @@
 // @flow
-
+import type {ChainAPI, DestructFunction} from "../_libs/createChainAPI"
 import type {DoWhen, ConstructFunction} from '../_libs/createConstruct'
 
 type ChangedFunction<O, P> = (newValue: O, oldValue?: O, ...args: P) => void
@@ -11,16 +11,53 @@ type ChainFunctions<O, I> = {
 }
 
 // No arguments
-declare export default function forEachEntry<O> (): ChainFunctions<O, Value<O>>
+declare export default function forEachEntry<O> (): ChainFunctions<O, Value<O>>;
 
 // Map 
-declare export default function forEachEntry<O, I> (mapValue: (item: I) => Value<O>): ChainFunctions<O, I>
+declare export default function forEachEntry<O, I> (mapValue: (item: I) => Value<O>): ChainFunctions<O, I>;
 
 // Map & change function
-declare export default function forEachEntry<O, I, P> (mapValue:  (item: I) => Value<O>, changedFunc: ChangedFunction<O, P>): DoWhen<O, I, P>
+declare export default function forEachEntry<O, I, P> (mapValue:  (item: I) => Value<O>, changedFunc: ChangedFunction<O, P>): DoWhen<O, I, P>;
 
 // Settings
 declare export default function forEachEntry<O, P> (settings: {
+  withKey?: boolean,
   do: ConstructFunction<O, P>, 
   changed?: ChangedFunction<O, P>, 
-}): DoWhen<O, Value<O>, P>
+}): DoWhen<O, Value<O>, P>;
+
+// Dependancies 1
+declare export default function forEachEntry<O, I, P, D1> (
+  mapValue: (item: I) => Value<O>, 
+  settings: {
+    // do: ConstructFunction<O>,
+    withKey?: boolean,
+    do: (value: O, d1: D1, next: ChainAPI, ...args: any[]) => void | DestructFunction, 
+    when: [(state: I) => D1],
+    changed?: ChangedFunction<O>, 
+  }
+): DoWhen<O, Value<O>>;
+
+// Dependancies 2
+declare export default function forEachEntry<O, I, P, D1, D2> (
+  mapValue: (item: I) => Value<O>, 
+  settings: {
+    // do: ConstructFunction<O>,
+    withKey?: boolean,
+    do: (value: O, d1: D1, d2: D2, next: ChainAPI, ...args: any[]) => void | DestructFunction, 
+    when: [(state: I) => D1, (state: I) => D2],
+    changed?: ChangedFunction<O>, 
+  }
+): DoWhen<O, Value<O>>;
+
+// Dependancies 3
+declare export default function forEachEntry<O, I, P, D1, D2, D3> (
+  mapValue: (item: I) => Value<O>,
+  settings: {
+    // do: ConstructFunction<O>,
+    withKey?: boolean,
+    do: (value: O, d1: D1, d2: D2, d3: D3, next: ChainAPI, ...args: any[]) => void | DestructFunction, 
+    when: [(state: I) => D1, (state: I) => D2, (state: I) => D3],
+    changed?: ChangedFunction<O>, 
+  }
+): DoWhen<O, Value<O>>;
