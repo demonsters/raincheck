@@ -13,7 +13,7 @@ const forEachEntry = (selector, options) => {
 
     let cachedObjects
 
-    const c = doWhen((state, call, filterFunc, ...args) => {
+    const c = doWhen((call, state, filterFunc, ...args) => {
       if (state) {
 
         const keys = Object.keys(state)

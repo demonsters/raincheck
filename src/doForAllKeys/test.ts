@@ -105,7 +105,8 @@ describe('doForAllKeys()', () => {
       }
 
       const state = {
-        loggedUsers: ["1", "2"]
+        loggedUsers: ["1", "2"],
+        userName: ""
       }
 
       const sendLogin = (userId: string) => {}
@@ -117,8 +118,8 @@ describe('doForAllKeys()', () => {
 
       tester(state)
 
-      expect(spy).toBeCalledWith(sendLogin, "1")
-      expect(spy).toBeCalledWith(sendLogin, "2")
+      expect(spy).toBeCalledWith(sendLogin, "1", expect.anything())
+      expect(spy).toBeCalledWith(sendLogin, "2", expect.anything())
 
     })
   })

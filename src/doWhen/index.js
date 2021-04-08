@@ -54,12 +54,12 @@ export default function doWhen(checkFunc) {
 
     return (state, ...args) => {
       const newState = selector(state)
-      if (shallowDiffers(oldState, newState)) {
+      if (!state || shallowDiffers(oldState, newState)) {
         destructKeys = Object.keys(destructFuncs)
         
         oldState = newState
 
-        checkFunc(newState, callFunc, filterFunc, ...args)
+        checkFunc(callFunc, newState, filterFunc, ...args)
 
         // destructKeys.forEach(key => {
         for (let i = 0; i < destructKeys.length; i++) {

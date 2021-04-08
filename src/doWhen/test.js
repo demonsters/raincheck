@@ -14,7 +14,7 @@ type State = {
 }
 
 const getTester = (connectToSocket: (props: Props) => any) => doWhen(
-  ({isLoggedIn, url}: State, call) => {
+  (call, {isLoggedIn, url}: State) => {
     if (isLoggedIn && url) {
       call(connectToSocket, url)
     }
@@ -157,7 +157,7 @@ describe('doWhen', () => {
       return end
     }
 
-    const tester = doWhen((array, call) => {
+    const tester = doWhen((call, array) => {
       array.forEach(key => call(func, key) )
     })
 
@@ -224,7 +224,7 @@ describe('doWhen', () => {
       return end
     }
 
-    const tester = doWhen((key, call) => {
+    const tester = doWhen((call, key) => {
       call(func, key)
     })
 
@@ -279,7 +279,7 @@ describe('doWhen', () => {
 
       const obj1 = "object 1"
       tester({ value: obj1 });
-      expect(start).toBeCalledWith(obj1, expect.anything(), expect.anything());
+      expect(start).toBeCalledWith(expect.anything(), obj1, expect.anything());
     })
 
     it('should work when value is not an object', () => {
@@ -304,7 +304,7 @@ describe('doWhen', () => {
 
       const obj1 = "object 1"
       tester({ value: obj1 });
-      expect(start).toBeCalledWith(obj1, expect.anything(), expect.anything());
+      expect(start).toBeCalledWith(expect.anything(), obj1, expect.anything());
     });
   });
 
@@ -321,7 +321,7 @@ describe('doWhen', () => {
       doCheck(true)
     }
 
-    const doCheck = doWhen((value: boolean, call) => {
+    const doCheck = doWhen((call, value: boolean) => {
       if (value) {
         call(doFunc)
       }
@@ -330,6 +330,31 @@ describe('doWhen', () => {
     doCheck(true)
 
     expect(i).toBe(1)
+
+  })
+
+  
+
+  it('should work with variables from external', () => {
+
+    const connectToSocket = jest.fn()
+    let isLoggedIn = false
+
+    const check = doWhen(
+      (call) => {
+        if (isLoggedIn) {
+          call(connectToSocket)
+        }
+      }
+    )
+
+    check()
+    expect(connectToSocket).not.toBeCalled()
+
+    isLoggedIn = true
+
+    check()
+    expect(connectToSocket).toBeCalled()
 
   })
 

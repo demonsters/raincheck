@@ -19,7 +19,7 @@ export default createSetup((selector, constructFunc, changed, keyExtractor = s =
   } : () => {}
 
 
-  const c = doWhen((state, call, filterFunc, ...args) => {
+  const c = doWhen((call, state, filterFunc, ...args) => {
     if (state) {
       for (let i = 0; i < state.length; i++) {
         const object = state[i]
