@@ -8,6 +8,6 @@ type ConstructFunction<P> = (props: P, chainAPI?: ChainAPI) => DestructFunction
 
 export type CallFunction<S> = <P>(funct: ConstructFunction<P>, props: P, key?: string ) => void
 
-type CheckerFunction<S> = (props: S, call: CallFunction<S>) => void
+type CheckerFunction<S> = (call: CallFunction<S>, props: S) => void
 
 export default function doWhen<S> (func: CheckerFunction<S> ): DoWhen<S, S>
