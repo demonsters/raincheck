@@ -1,4 +1,7 @@
 
+function isPromise(value) {
+  return Boolean(value && typeof value.then === 'function');
+}
 
 const createNext = () => {
 
@@ -7,6 +10,8 @@ const createNext = () => {
   const createNextAPI = (parentFunc) => {
 
     const doNext = (shouldDestruct) => (...constructors) => {
+
+      let isDestructed = false
 
       parentFunc(shouldDestruct)
 
@@ -18,13 +23,25 @@ const createNext = () => {
             destructs = destructs.filter(d => d !== destruct)
           }
         }))
-        if (destruct && typeof destruct === "function") {
-          destructs.push(destruct)
+        if (destruct) {
+          if (isPromise(destruct)) {
+            destruct.then((destruct) => {
+              if (!destruct) return
+              if (isDestructed) {
+                destruct()
+              } else {
+                destructs.push(destruct)
+              }
+            })
+          } else if (typeof destruct === "function") {
+            destructs.push(destruct)
+          }
         }
       })
 
       // Destructs
       return (...args) => {
+        isDestructed = true
         destructs.forEach((destruct) => destruct(...args))
         destructs.length = 0
       }

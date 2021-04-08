@@ -5,7 +5,7 @@ import { ChainAPI } from '../_libs/createChainAPI';
 //
 type ConstructFunction<P> = (props: P, chainAPI?: ChainAPI) => DestructFunction | void
 
-type CallFunction = <P>(funct: ConstructFunction<P>, props: P, key?: string ) => void
+type CallFunction = <P>(funct: ConstructFunction<P>, props?: P, key?: string ) => void
 
 type CheckerFunction<S> = (call: CallFunction, props: S) => void
 

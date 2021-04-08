@@ -4,9 +4,9 @@ import {DoWhen, DestructFunction} from '../_libs/createConstruct'
 import { ChainAPI } from '../_libs/createChainAPI';
 
 //
-type ConstructFunction<P> = (props: P, chainAPI?: ChainAPI) => void | DestructFunction
+type ConstructFunction<P> = (props: P, chainAPI?: ChainAPI) => void | DestructFunction | Promise<void | DestructFunction>
 
-export type CallFunction<S> = <P>(funct: ConstructFunction<P>, props: P, key?: string ) => void
+export type CallFunction<S> = <P>(funct: ConstructFunction<P>, props?: P, key?: string ) => void
 
 type CheckerFunction<S> = (call: CallFunction<S>, props: S) => void
 
