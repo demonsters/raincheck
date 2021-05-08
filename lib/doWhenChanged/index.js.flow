@@ -1,7 +1,0 @@
-// @flow
-
-type DestructFunction = () => void
-type ChangedFunction<S, P> = (newValue: ?S, oldValue: ?S, ...args: P) => ?DestructFunction
-type DoWhen<S, P> = (state: S, ...rest: P) => void
-
-declare export default function doWhenChanged<S, A, P> (func: ChangedFunction<S, P> ): DoWhen<S, P>

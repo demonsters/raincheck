@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "lib": ["ESNext", "DOM"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es5",
+    "declaration": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "outDir": "lib"
+  },
+  "exclude": [
+    "node_modules",
+  ],
+}

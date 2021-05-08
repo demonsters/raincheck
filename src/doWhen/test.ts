@@ -2,18 +2,13 @@
 
 import doWhen from ".";
 
-type Props = {
-  isLoggedIn: boolean;
-  url: string;
-};
-
 type State = {
   isLoggedIn: boolean;
   url: string;
   test?: number;
 };
 
-const getTester = (connectToSocket: (props: Props) => any) =>
+const getTester = (connectToSocket: (props: string) => any) =>
   doWhen((call, { isLoggedIn, url }: State) => {
     if (isLoggedIn && url) {
       call(connectToSocket, url);
@@ -34,58 +29,10 @@ describe("doWhen", () => {
 
     tester(state);
     tester(state);
-    expect(connectToSocket).toBeCalledWith(url, expect.anything());
+    expect(connectToSocket).toBeCalledWith(url);
     expect(connectToSocket).toHaveBeenCalledTimes(1);
   });
 
-  it("should call check function once when state is not changed", () => {
-    const checker = jest.fn();
-
-    const tester = doWhen(({ isLoggedIn, url }, call) => {
-      checker();
-    }).map((state) => ({
-      isLoggedIn: state.isLoggedIn,
-      url: state.url,
-    }));
-
-    const url = "dfgh";
-    const state = {
-      isLoggedIn: true,
-      url,
-    };
-
-    tester(state);
-    tester(state);
-    expect(checker).toHaveBeenCalledTimes(1);
-  });
-
-  it("should call check function when state is changed", () => {
-    const checker = jest.fn();
-
-    const tester = doWhen(({ isLoggedIn, url }, call) => {
-      checker();
-    }).map((state) => ({
-      isLoggedIn: state.isLoggedIn,
-      url: state.url,
-    }));
-
-    const url = "dfgh";
-    const state = {
-      isLoggedIn: true,
-      url,
-    };
-
-    tester(state);
-
-    const newState = {
-      isLoggedIn: false,
-      url,
-    };
-
-    tester(newState);
-
-    expect(checker).toHaveBeenCalledTimes(2);
-  });
 
   it("should destruct function when not called anymore", () => {
     const destruct = jest.fn();
@@ -136,7 +83,7 @@ describe("doWhen", () => {
       return end;
     };
 
-    const tester = doWhen((call, array) => {
+    const tester = doWhen<Array<string>>((call, array) => {
       array.forEach((key) => call(func, key));
     });
 
@@ -146,12 +93,12 @@ describe("doWhen", () => {
     // Start obj1
     tester([obj1]);
     tester([obj1]);
-    expect(start).toBeCalledWith(obj1, expect.anything());
+    expect(start).toBeCalledWith(obj1);
 
     // Start obj2
     tester([obj1, obj2]);
     tester([obj1, obj2]);
-    expect(start).toBeCalledWith(obj2, expect.anything());
+    expect(start).toBeCalledWith(obj2);
 
     // End obj1
     tester([obj2]);
@@ -160,7 +107,7 @@ describe("doWhen", () => {
 
     // End obj2
     tester([obj1]);
-    expect(start).toBeCalledWith(obj1, expect.anything());
+    expect(start).toBeCalledWith(obj1);
     expect(end).toBeCalled();
 
     tester([]);
@@ -180,7 +127,7 @@ describe("doWhen", () => {
       return end;
     };
 
-    const tester = doWhen((key, call) => {
+    const tester = doWhen((call, key) => {
       call(func, key);
     });
 
@@ -205,22 +152,22 @@ describe("doWhen", () => {
     });
 
     tester("key1");
-    expect(start).toBeCalledWith("key1", expect.anything());
+    expect(start).toBeCalledWith("key1");
     expect(start).toHaveBeenCalledTimes(1);
 
     tester("key2");
-    expect(start).toBeCalledWith("key2", expect.anything());
+    expect(start).toBeCalledWith("key2");
     expect(start).toHaveBeenCalledTimes(2);
   });
 
-  describe("mock()", () => {
+  xdescribe("mock()", () => {
     it("should be able to mock it easily", () => {
       const connectToSocket = () => {};
 
       const listener = jest.fn();
       const destruct = jest.fn();
 
-      let tester = getTester(connectToSocket).mock(listener, destruct);
+      let tester = getTester(connectToSocket) //.mock(listener, destruct);
 
       const url = "dfgh";
       tester({
@@ -245,8 +192,8 @@ describe("doWhen", () => {
       const destruct = jest.fn();
 
       const tester = doWhen(start)
-        .map((s) => s.value)
-        .mock(listener, destruct);
+        // .map((s) => s.value)
+        // .mock(listener, destruct);
 
       const obj1 = "object 1";
       tester({ value: obj1 });
@@ -259,21 +206,10 @@ describe("doWhen", () => {
       const listener = jest.fn();
       const destruct = jest.fn();
 
-      const tester = doWhen(start).mock(listener, destruct);
+      const tester = doWhen(start) //.mock(listener, destruct);
 
       tester(true);
       expect(start).toBeCalled();
-    });
-  });
-
-  describe("map()", () => {
-    it("should called with object", () => {
-      const start = jest.fn();
-      const tester = doWhen(start).map((s) => s.value);
-
-      const obj1 = "object 1";
-      tester({ value: obj1 });
-      expect(start).toBeCalledWith(expect.anything(), obj1, expect.anything());
     });
   });
 
@@ -318,37 +254,146 @@ describe("doWhen", () => {
     expect(connectToSocket).toBeCalled();
   });
 
-  it("Should work with async", async () => {
-    const connectToSocket = jest.fn();
-    const destruct = jest.fn();
-    let isLoggedIn = false;
 
-    let resolve
+  it("should check if props are changed", () => {
+    const construct = jest.fn();
+    const destruct = jest.fn();
+    let items = {
+      "one": 1,
+      "two": 2,
+    };
 
     const check = doWhen((call) => {
-      if (isLoggedIn) {
-        call(() => new Promise(r => {
-          resolve = r
-          connectToSocket();
-        }))
-      }
+        Object.keys(items).forEach(key => {
+          call((...args) => {
+            construct(...args)
+            return () => {
+              destruct()
+            }
+          }, [items[key]], `connect-${key}`);
+        })
     });
 
     check();
-    expect(connectToSocket).not.toBeCalled();
+    expect(construct).toHaveBeenCalledTimes(2);
 
-    isLoggedIn = true;
+    items = {
+      "one": 2,
+      "two": 1,
+    };
 
     check();
-    expect(connectToSocket).toBeCalled();
-
-    isLoggedIn = false;
-    
-    check();
-    
-    await resolve(() => {
-      destruct();
-    })
-    expect(destruct).toBeCalled();
+    expect(destruct).toHaveBeenCalledTimes(2);
+    expect(construct).toHaveBeenCalledTimes(4);
   });
+
+  it("Should work with key", () => {
+    const connectToSocket = jest.fn();
+    const destruct = jest.fn();
+    let list = ["a"];
+
+    const check = doWhen((call) => {
+      list.forEach(item => {
+        call(() => {
+          connectToSocket()
+          return () => {
+            destruct()
+          }
+        }, item)
+      })
+    });
+
+    check();
+    expect(destruct).not.toBeCalled()
+    expect(connectToSocket).toHaveBeenCalledTimes(1);
+
+    check();
+    expect(connectToSocket).toHaveBeenCalledTimes(1);
+
+    list = ["b"];
+
+    check();
+    expect(destruct).toHaveBeenCalledTimes(1)
+    expect(connectToSocket).toHaveBeenCalledTimes(2);
+
+  });
+
+
+  describe('async', () => {
+
+
+    it("Should call destruct when async is resolved", async () => {
+      const connectToSocket = jest.fn();
+      const destruct = jest.fn();
+      let isLoggedIn = false;
+
+      let resolve
+
+      const check = doWhen((call) => {
+        if (isLoggedIn) {
+          call(() => new Promise(r => {
+            resolve = r
+            connectToSocket();
+          }))
+        }
+      });
+
+      check();
+      expect(connectToSocket).not.toBeCalled();
+
+      isLoggedIn = true;
+
+      check();
+      expect(connectToSocket).toBeCalled();
+
+      await resolve(() => {
+        destruct();
+      })
+
+      expect(destruct).not.toBeCalled();
+
+      isLoggedIn = false;
+      
+      check();
+      
+      expect(destruct).toBeCalled();
+    });
+    
+    it("Should call destruct when async is resolved later", async () => {
+      const connectToSocket = jest.fn();
+      const destruct = jest.fn();
+      let isLoggedIn = false;
+
+      let resolve
+
+      const check = doWhen((call) => {
+        if (isLoggedIn) {
+          call(() => new Promise(r => {
+            resolve = r
+            connectToSocket();
+          }))
+        }
+      });
+
+      check();
+      expect(connectToSocket).not.toBeCalled();
+
+      isLoggedIn = true;
+
+      check();
+      expect(connectToSocket).toBeCalled();
+
+      isLoggedIn = false;
+      
+      check();
+      
+      await resolve(() => {
+        destruct();
+      })
+      expect(destruct).toBeCalled();
+    });
+
+
+  })
+
 });

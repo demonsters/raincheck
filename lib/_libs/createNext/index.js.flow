@@ -1,6 +1,0 @@
-
-type ChainAPI = {
-  next: (destruct) => {
-
-  }
-}

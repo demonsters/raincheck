@@ -1,8 +1,0 @@
-// @flow
-
-import type {MiddlewareAPI, Middleware} from 'redux'
-
-type DoWhen<S, A> = (state: S, store: MiddlewareAPI<S, A>, action: A) => void
-
-declare export default function createMiddleware<S, A> (...funcs: Array<DoWhen<S, A>>): Middleware<S, A>
-

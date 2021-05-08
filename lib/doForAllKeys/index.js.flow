@@ -1,5 +1,0 @@
-// @flow
-
-import type {DoWhen, ConstructFunction} from '../_libs/createConstruct'
-
-declare export default function doForAllKeys<S, P> (startFunc: ConstructFunction<S, P> ): DoWhen<S, Array<S>, P>
